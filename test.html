@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分类树 - 子类别关联视频</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: sans-serif; padding: 20px; background: #f8f9fa; }
+        .tree { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        ul { list-style: none; padding-left: 20px; }
+        li { margin: 6px 0; line-height: 1.5; }
+        .node { cursor: pointer; user-select: none; display: inline-block; }
+        .node:hover { background-color: #e9ecef; }
+        .toggle { display: inline-block; width: 20px; text-align: center; cursor: pointer; font-weight: bold; }
+        .children { margin-left: 20px; }
+        .hidden { display: none; }
+        .video-list { margin-left: 24px; padding: 4px 0 4px 8px; border-left: 2px solid #ccc; }
+        .video-item { display: block; margin: 4px 0; color: #0066cc; cursor: pointer; text-decoration: underline; }
+        .video-item:hover { color: #ff6600; }
+        .video-toggle { cursor: pointer; background: #f0f0f0; padding: 2px 8px; border-radius: 12px; font-size: 12px; display: inline-block; margin-left: 8px; }
+        .loading { text-align: center; padding: 50px; color: #666; }
+        .subcat-name { font-weight: 500; }
+    </style>
+</head>
+<body>
+<div class="tree" id="treeContainer">
+    <div class="loading">加载中...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+    // 全局存储 allData 的标题->链接映射
+    let titleToLink = new Map();
+
+    (async () => {
+        try {
+            const res = await fetch("data.xlsx");
+            if (!res.ok) throw new Error("无法加载 data.xlsx");
+            const blob = await res.arrayBuffer();
+            const wb = XLSX.read(blob);
+            
+            // ========== 1. 读取第一个工作表（allData），构建标题->链接映射 ==========
+            const sheet1 = wb.Sheets[wb.SheetNames[0]];
+            const allData = XLSX.utils.sheet_to_json(sheet1);
+            // 假设第一列是“标题”，有一列是“链接”
+            // 获取列名（可能为“标题”或“链接”），需要动态获取或假设
+            const firstRow = allData[0];
+            let titleCol = null, linkCol = null;
+            for (let key in firstRow) {
+                if (key.includes("标题") || key.toLowerCase() === "title") titleCol = key;
+                if (key.includes("链接") || key.toLowerCase() === "link") linkCol = key;
+            }
+            if (!titleCol || !linkCol) {
+                // 尝试常见列名
+                titleCol = "标题";
+                linkCol = "链接";
+            }
+            for (const row of allData) {
+                const title = row[titleCol] ? String(row[titleCol]).trim() : "";
+                const link = row[linkCol] ? String(row[linkCol]).trim() : "";
+                if (title && link) titleToLink.set(title, link);
+            }
+            console.log(`已加载 ${titleToLink.size} 个视频链接`);
+
+            // ========== 2. 读取第二个工作表（classData），构建树 ==========
+            const sheet2 = wb.Sheets[wb.SheetNames[1]];
+            const rows = XLSX.utils.sheet_to_json(sheet2, { header: 1, defval: "" });
+            if (!rows || rows.length < 2) throw new Error("工作表无数据");
+
+            const headers = rows[0].map(h => (h || "").toString().trim());
+            // 找到“子类别”列的索引
+            const subCatIndex = headers.findIndex(h => h === "子类别");
+            if (subCatIndex === -1) throw new Error("未找到‘子类别’列");
+            // “关联”列应该在子类别之后一列
+            const relatedIndex = subCatIndex + 1;
+            if (relatedIndex >= headers.length) throw new Error("子类别后没有‘关联’列");
+            
+            // 路径列：从第0列到子类别列（包含）
+            const dataRows = rows.slice(1).filter(row => row[subCatIndex] && row[subCatIndex].toString().trim() !== "");
+            
+            // 构建树：根节点
+            const root = { children: [] };
+            
+            for (const row of dataRows) {
+                // 提取路径（0..subCatIndex）
+                const path = [];
+                for (let i = 0; i <= subCatIndex; i++) {
+                    let val = row[i];
+                    if (val === undefined || val === null) val = "";
+                    path.push(val.toString().trim());
+                }
+                if (path.some(p => p === "")) continue; // 跳过有空路径的行
+                
+                // 提取关联标题列表（从 relatedIndex 列）
+                let relatedTitles = [];
+                const relatedRaw = row[relatedIndex] ? String(row[relatedIndex]).trim() : "";
+                if (relatedRaw) {
+                    relatedTitles = relatedRaw.split(",").map(s => s.trim()).filter(s => s);
+                }
+                
+                // 沿着路径插入节点
+                let current = root;
+                for (let i = 0; i < path.length; i++) {
+                    const nodeName = path[i];
+                    let child = current.children.find(c => c.name === nodeName);
+                    if (!child) {
+                        child = { name: nodeName, children: [], relatedTitles: [] };
+                        current.children.push(child);
+                    }
+                    current = child;
+                }
+                // 当前节点就是子类别节点（路径终点），合并关联标题（去重）
+                if (relatedTitles.length) {
+                    const existingSet = new Set(current.relatedTitles);
+                    relatedTitles.forEach(t => existingSet.add(t));
+                    current.relatedTitles = Array.from(existingSet);
+                }
+            }
+            
+            // 渲染树
+            renderTree(root.children, document.getElementById("treeContainer"));
+        } catch (err) {
+            document.getElementById("treeContainer").innerHTML = `<div style="color:red; padding:20px;">加载失败: ${err.message}</div>`;
+            console.error(err);
+        }
+    })();
+
+    // 递归渲染树
+    function renderTree(nodes, container) {
+        if (!nodes || nodes.length === 0) {
+            container.innerHTML = "<div>暂无分类数据</div>";
+            return;
+        }
+        const ul = document.createElement("ul");
+        
+        nodes.forEach(node => {
+            const li = document.createElement("li");
+            const hasChildren = node.children && node.children.length > 0;
+            const hasVideos = node.relatedTitles && node.relatedTitles.length > 0;
+            
+            // 折叠子分类的开关
+            const toggleSpan = document.createElement("span");
+            toggleSpan.className = "toggle";
+            toggleSpan.textContent = hasChildren ? "▼" : "•";
+            toggleSpan.style.opacity = hasChildren ? "1" : "0.4";
+            
+            // 节点名称（子类别文字）
+            const nameSpan = document.createElement("span");
+            nameSpan.className = "node subcat-name";
+            nameSpan.textContent = node.name;
+            
+            li.appendChild(toggleSpan);
+            li.appendChild(nameSpan);
+            
+            // 子分类列表容器（如果有子分类）
+            let childrenUl = null;
+            if (hasChildren) {
+                childrenUl = document.createElement("ul");
+                childrenUl.className = "children";
+                renderTree(node.children, childrenUl);
+                li.appendChild(childrenUl);
+            }
+            
+            // 相关视频列表容器（如果有视频）
+            let videoDiv = null;
+            let videoToggleSpan = null;
+            if (hasVideos) {
+                // 添加一个单独的视频区域
+                videoDiv = document.createElement("div");
+                videoDiv.className = "video-list hidden";  // 默认收起
+                // 视频标题列表
+                node.relatedTitles.forEach(title => {
+                    const link = titleToLink.get(title);
+                    const videoItem = document.createElement("div");
+                    videoItem.className = "video-item";
+                    videoItem.textContent = title;
+                    if (link) {
+                        videoItem.style.cursor = "pointer";
+                        videoItem.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            window.open(link, "_blank");
+                        });
+                    } else {
+                        videoItem.style.color = "#999";
+                        videoItem.title = "无链接";
+                    }
+                    videoDiv.appendChild(videoItem);
+                });
+                li.appendChild(videoDiv);
+                
+                // 添加一个小开关来控制视频列表（也可以放在节点名称右侧）
+                videoToggleSpan = document.createElement("span");
+                videoToggleSpan.className = "video-toggle";
+                videoToggleSpan.textContent = "📹 相关视频 ▼";
+                // 插入到名称后面
+                nameSpan.insertAdjacentElement('afterend', videoToggleSpan);
+                
+                // 视频折叠逻辑
+                const toggleVideos = () => {
+                    if (videoDiv.classList.contains("hidden")) {
+                        videoDiv.classList.remove("hidden");
+                        videoToggleSpan.textContent = "📹 相关视频 ▲";
+                    } else {
+                        videoDiv.classList.add("hidden");
+                        videoToggleSpan.textContent = "📹 相关视频 ▼";
+                    }
+                };
+                videoToggleSpan.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    toggleVideos();
+                });
+            }
+            
+            // 子分类折叠逻辑（点击 toggleSpan 或 nameSpan ？需求：点击节点文字控制视频列表，点击箭头控制子分类）
+            if (hasChildren) {
+                const toggleChildren = () => {
+                    if (childrenUl.classList.contains("hidden")) {
+                        childrenUl.classList.remove("hidden");
+                        toggleSpan.textContent = "▼";
+                    } else {
+                        childrenUl.classList.add("hidden");
+                        toggleSpan.textContent = "▶";
+                    }
+                };
+                toggleSpan.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    toggleChildren();
+                });
+            }
+            
+            // 点击节点文字（子类别名称）展开/收起视频列表（需求）
+            if (hasVideos) {
+                nameSpan.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    if (videoDiv.classList.contains("hidden")) {
+                        videoDiv.classList.remove("hidden");
+                        if (videoToggleSpan) videoToggleSpan.textContent = "📹 相关视频 ▲";
+                    } else {
+                        videoDiv.classList.add("hidden");
+                        if (videoToggleSpan) videoToggleSpan.textContent = "📹 相关视频 ▼";
+                    }
+                });
+            }
+            
+            ul.appendChild(li);
+        });
+        
+        container.innerHTML = "";
+        container.appendChild(ul);
+    }
+</script>
+</body>
+</html>
