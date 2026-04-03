@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Excel 工作表拆分工具</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .sheet-item { margin: 15px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        button { margin-right: 10px; padding: 6px 12px; cursor: pointer; }
+        .status { color: green; margin-top: 10px; }
+        .error { color: red; }
+    </style>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h2>📁 Excel 工作表拆分工具</h2>
+    <input type="file" id="excelInput" accept=".xlsx, .xls" />
+    <div id="sheetsContainer"></div>
+    <div id="status"></div>
+
+    <script>
+        document.getElementById('excelInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetNames = workbook.SheetNames;
+                
+                const container = document.getElementById('sheetsContainer');
+                container.innerHTML = ''; // 清空旧内容
+                
+                sheetNames.forEach(sheetName => {
+                    const sheetDiv = document.createElement('div');
+                    sheetDiv.className = 'sheet-item';
+                    sheetDiv.innerHTML = `
+                        <strong>📄 工作表：${sheetName}</strong><br/>
+                        <button class="btn-csv" data-sheet="${sheetName}">📥 下载为 CSV</button>
+                        <button class="btn-json" data-sheet="${sheetName}">📥 下载为 JSON</button>
+                    `;
+                    container.appendChild(sheetDiv);
+                });
+                
+                // 绑定按钮事件
+                document.querySelectorAll('.btn-csv').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const sheetName = btn.getAttribute('data-sheet');
+                        const sheet = workbook.Sheets[sheetName];
+                        const csv = XLSX.utils.sheet_to_csv(sheet);
+                        downloadFile(`${sheetName}.csv`, csv, 'text/csv;charset=utf-8;');
+                    });
+                });
+                
+                document.querySelectorAll('.btn-json').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const sheetName = btn.getAttribute('data-sheet');
+                        const sheet = workbook.Sheets[sheetName];
+                        const json = XLSX.utils.sheet_to_json(sheet);
+                        const jsonStr = JSON.stringify(json, null, 2);
+                        downloadFile(`${sheetName}.json`, jsonStr, 'application/json');
+                    });
+                });
+                
+                document.getElementById('status').innerHTML = '<span class="status">✅ 读取成功，可点击按钮分别导出</span>';
+            };
+            reader.onerror = function() {
+                document.getElementById('status').innerHTML = '<span class="error">❌ 文件读取失败</span>';
+            };
+            reader.readAsArrayBuffer(file);
+        });
+        
+        function downloadFile(filename, content, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
