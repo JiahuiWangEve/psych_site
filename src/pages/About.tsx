@@ -30,10 +30,11 @@ const About: React.FC = () => {
             </h2>
             
             <ul className="list-disc pl-5 space-y-2">
-              <li>每周读书会：一起读心理学经典书籍</li>
-              <li>主题讨论会：探讨热门心理学话题</li>
+              <li>读书会：一起读心理学经典书籍</li>
+              <li>讨论会：探讨热门心理学话题</li>
               <li>观影会：观看心理学相关电影并分享感受</li>
               <li>茶话会：轻松交流人格测试、个人成长等话题</li>
+              <li>更多活动方式正在探索中...欢迎提出建议！</li>
             </ul>
 
             <h2 className="text-xl font-semibold text-gray-800 mt-8 mb-4">
@@ -42,7 +43,7 @@ const About: React.FC = () => {
             
             <p>
               如果你也对心理学感兴趣，欢迎加入我们的 QQ 群交流：
-              <strong className="text-primary">123456789</strong>
+              <strong className="text-primary">453440021</strong>
             </p>
           </div>
         </div>
