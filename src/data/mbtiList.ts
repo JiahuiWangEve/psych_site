@@ -1,0 +1,139 @@
+import type { MbtiTest } from '../types';
+
+const mbtiList: MbtiTest[] = [
+  {
+    id: '1',
+    name: 'MBTI 官方测试',
+    type: '总体人格',
+    description: '最经典的MBTI人格测试，免费版本提供详细的人格分析',
+    url: 'https://16personalities.org.cn/'
+  },
+  {
+    id: '2',
+    name: 'SBTI 人格测试',
+    type: '总体人格',
+    description: '最近很火的玩梗型人格测试',
+    url: 'https://sbti.dev/test' // 请自行修改链接
+  },
+  {
+    id: '3',
+    name: 'CPTI 友谊测试',
+    type: '娱乐玩梗',
+    description: '和朋友一起测量，可以测出你们之间的关系类型',
+    url: '#小程序://CPTI测试/jksA3Rz4MPLm4Uh' // 请自行修改链接
+  },
+  {
+    id: '4',
+    name: 'CBTI 程序员种类测试',
+    type: '娱乐玩梗',
+    description: '你是哪种程序员？',
+    url: 'https://cbti.codefather.cn/'
+  },
+  {
+    id: '5',
+    name: '荣格八维测试',
+    type: '总体人格',
+    description: '才储_荣格八维测试原版92题',
+    url: 'https://www.apesk.com/jungtest/' // 请自行修改链接
+  },
+  {
+    id: '6',
+    name: '萨基诺娃恋爱对象版荣格八维测试',
+    type: '细分领域',
+    description: '你的理想型是什么人格？（全英文版）',
+    url: 'https://sakinorva.net/test/romantic_preferences' // 请自行修改链接
+  },
+  {
+    id: '7',
+    name: '蛋糕人格测试',
+    type: '娱乐玩梗',
+    description: '你是什么类型的小蛋糕？职场性格测试',
+    url: 'https://www.cake.me/personality-test/what-cake-r-u-pro?locale=zh-CN'
+  },
+  {
+    id: '8',
+    name: 'SDTI 测试',
+    type: '娱乐玩梗',
+    description: '小红书姐妹们做的女性友好版测试❤️',
+    url: 'https://sdtis.com/'
+  },
+  {
+    id: '9',
+    name: '文风检测器',
+    type: '细分领域',
+    description: 'AI文风检测工具，看看你的文章更像哪位作家',
+    url: 'https://testurtext.us/index.html'
+  },
+  {
+    id: '10',
+    name: 'PolitiScales政治倾向测试',
+    type: '细分领域',
+    description: '从8个维度测试你的政治倾向',
+    url: 'https://gouvernathor.github.io/zh_CN/'
+  },
+  {
+    id: '11',
+    name: 'ACGTI测试',
+    type: '细分领域',
+    description: '测试你是哪个动漫角色',
+    url: 'https://acgti.tianxingleo.top/#/'
+  },
+  {
+      id: '12',
+      name: '鸟格测试',
+      type: '娱乐玩梗',
+      description: '咕咕咕咕咕咕咕咕咕？',
+      url: 'https://xiaohao934.github.io/birdtest/',
+  },
+  {
+    id: '13',
+    name: 'ABTI 测试',
+    type: '娱乐玩梗',
+    description: '测测你的学术人格',
+    url: 'https://abti.fun/'
+  },
+  {
+    id: '14',
+    name: '大五人格测试',
+    type: '总体人格',
+    description: '经典的五大人格测试，测量开放性、责任心、外向性、宜人性和神经质,问卷星50题',
+    url: 'https://healthbigdata.wjx.cn/m/69635824.aspx'
+  },
+  {
+    id: '15',
+    name: '内隐偏见测验',
+    type: '细分领域',
+    description: '哈佛大学的隐性偏见测验，测试你对不同群体的潜在偏见',
+    url: 'https://implicit.harvard.edu/implicit/china'
+  },
+  {
+    id: '16',
+    name: '霍兰德职业兴趣测试',
+    type: '细分领域',
+    description: '测试你的职业兴趣类型，帮助你了解适合你的职业方向,120题',
+    url: 'https://minke8.cn/gd7.html'
+  },
+  {
+    id: '17',
+    name: '发散思维能力测试',
+    type: '细分领域',
+    description: '通过写出10个不同的名词，测试你的发散思维能力，英文',
+    url: 'https://www.datcreativity.com/task?'
+  },
+  {
+    id: '18',
+    name: 'AHL人机恋罗盘测试',
+    type: '细分领域',
+    description: '测试你对于“人机恋”，人与AI之间浪漫关系的立场',
+    url: 'https://photalia.github.io/AHL_Political_Test'
+  },
+  {
+    id: '19',
+    name: '猪',
+    type: '娱乐玩梗',
+    description: '你是猪吗？是什么猪？',
+    url: 'https://nanancc.github.io/pig-text/'
+  }
+];
+
+export default mbtiList;
