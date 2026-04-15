@@ -10,6 +10,7 @@ export interface ResourceItem {
 export interface MbtiTest {
   id: string;
   name: string;
+  type:string;
   description: string;
   url: string;
 }

@@ -12,7 +12,7 @@ const Home: React.FC = () => {
             <span className="text-sm font-medium">欢迎加入我们</span>
           </div>
           <h1 className="text-4xl lg:text-6xl font-bold text-gray-800 mb-6">
-            心理社团
+            蓬草杂谈社
           </h1>
           <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             我们关注大学生的心理健康与精神世界，渴望搭建一个有温度有回应有趣的交流平台。
