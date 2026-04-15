@@ -41,10 +41,19 @@ const About: React.FC = () => {
               联系方式
             </h2>
             
-            <p>
+            <p className="mb-6">
               如果你也对心理学感兴趣，欢迎加入我们的 QQ 群交流：
               <strong className="text-primary">453440021</strong>
             </p>
+
+            <div className="mt-6">
+              <p className="mb-4 text-gray-600">扫码直接加入：</p>
+              <img 
+                src="/website_images/qrcode_1776231135790.jpg" 
+                alt="QQ群二维码" 
+                className="max-w-xs rounded-lg shadow-md"
+              />
+            </div>
           </div>
         </div>
       </div>
