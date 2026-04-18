@@ -181,121 +181,20 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // MBTI 测试数据
-    const mbtiList = [
-      {
-        id: 1,
-        name: "官网 16Personalities",
-        description: "最经典的原版 MBTI 测试",
-        type: "总体人格",
-        url: "https://16personalities.org.cn/"
-      },
-      {
-        id: 2,
-        name: "SBTI 星空社",
-        description: "更详细的功能二分法测试",
-        type: "总体人格",
-        url: "https://sbti.dev/test"
-      },
-      {
-        id: 3,
-        name: "CPTI 认知功能测试",
-        description: "专门测八方位认知功能",
-        type: "细分领域",
-        url: "#小程序://CPTI测试/jksA3Rz4MPLm4Uh"
-      },
-      {
-        id: 4,
-        name: "C-BTI 认知行为测试",
-        description: "基于认知行为类型的测试",
-        type: "细分领域",
-        url: "https://cbti.codefather.cn/"
-      },
-      {
-        id: 5,
-        name: "荣格八维测试",
-        description: "经典的荣格八维测试",
-        type: "细分领域",
-        url: "https://www.apesk.com/jungtest/"
-      },
-      {
-        id: 6,
-        name: "浪漫偏好测试",
-        description: "测你在亲密关系中的浪漫偏好",
-        type: "细分领域",
-        url: "https://sakinorva.net/test/romantic_preferences"
-      },
-      {
-        id: 7,
-        name: "你是什么蛋糕",
-        description: "娱乐向测试，看看你对应哪种蛋糕",
-        type: "娱乐玩梗",
-        url: "https://www.cake.me/personality-test/what-cake-r-u-pro?locale=zh-CN"
-      },
-      {
-        id: 8,
-        name: "SDTI 自我识别测试",
-        description: "帮助你自我识别人格类型的测试",
-        type: "总体人格",
-        url: "https://sdtis.com/"
-      },
-      {
-        id: 9,
-        name: "TestUrText",
-        description: "文字类型测试，通过文字判断你的类型",
-        type: "细分领域",
-        url: "https://testurtext.us/index.html"
-      },
-      {
-        id: 10,
-        name: "GovernaTor 的八维测试",
-        description: "开源的八维功能测试",
-        type: "细分领域",
-        url: "https://gouvernathor.github.io/zh_CN/"
-      },
-      {
-        id: 11,
-        name: "ACGTI 另类认知测试",
-        description: "另一种角度的认知功能测试",
-        type: "细分领域",
-        url: "https://acgti.tianxingleo.top/#/"
-      },
-      {
-        id: 12,
-        name: "鸟类分类测试",
-        description: "把人分成四种鸟类的娱乐测试",
-        type: "娱乐玩梗",
-        url: "https://xiaohao934.github.io/birdtest/"
-      },
-      {
-        id: 13,
-        name: "ABTI 天赋本能测试",
-        description: "基于天赋本能的类型测试",
-        type: "总体人格",
-        url: "https://abti.fun/"
-      },
-      {
-        id: 14,
-        name: "疾病污名化认知问卷",
-        description: "心理测量问卷",
-        type: "细分领域",
-        url: "https://healthbigdata.wjx.cn/m/69635824.aspx"
-      },
-      {
-        id: 15,
-        name: "IAT 内隐联想测验",
-        description: "经典的内隐态度测量",
-        type: "细分领域",
-        url: "https://implicit.harvard.edu/implicit/china"
-      },
-      {
-        id: 16,
-        name: " GD七维度测试",
-        description: "七个维度的人格测试",
-        type: "总体人格",
-        url: "https://minke8.cn/gd7.html"
+    let mbtiList = [];
+
+    // 加载 MBTI 数据 from json
+    async function loadData() {
+      try {
+        const response = await fetch('../data/mbti.json');
+        mbtiList = await response.json();
+        initFilter();
+        renderList(mbtiList);
+      } catch (err) {
+        console.error('加载数据失败:', err);
+        document.getElementById('test-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500">加载 MBTI 数据失败</div>';
       }
-    ];
+    }
 
     // 获取所有不重复的类型
     function getTypes() {
@@ -378,9 +277,8 @@
       renderList(filteredList);
     }
 
-    // 初始化
-    initFilter();
-    renderList(mbtiList);
+    // 初始化：加载数据
+    loadData();
 
     // 移动端菜单
     function toggleMobileMenu() {
