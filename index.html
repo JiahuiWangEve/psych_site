@@ -8,11 +8,17 @@
     <!-- GitHub Pages SPA 404 重定向解析脚本 -->
     <script>
       (function() {
+        // 如果 hash 中包含路径，把它转换为正常的 history 路径
         if (window.location.hash && window.location.hash.startsWith('#/')) {
-          var segmentCount = 1; // 保留 /psych_site/
-          var path = window.location.hash.slice(2);
-          var basePath = window.location.pathname.split('/').filter(function(p) { return p.length > 0; }).slice(0, segmentCount).join('/');
-          var newPath = (basePath ? '/' + basePath : '') + '/' + path + window.location.search + window.location.hash;
+          var segmentCount = 1; // 保留 /psych_site/ 这一级
+          var hashPath = window.location.hash.substring(1); // 取 # 后面的部分
+          var segments = window.location.pathname.split('/').filter(function(p) { return p.length > 0; });
+          var basePath = segments.slice(0, segmentCount).join('/');
+          var newPath = '';
+          if (basePath) {
+            newPath += '/' + basePath;
+          }
+          newPath += hashPath;
           window.history.replaceState(null, document.title, newPath);
         }
       })();
