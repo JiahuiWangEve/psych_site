@@ -4,7 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>psych_site</title>
+    <title>蓬草心理社</title>
+    <!-- GitHub Pages SPA 404 重定向解析脚本 -->
+    <script>
+      (function() {
+        if (window.location.hash && window.location.hash.startsWith('#/')) {
+          var segmentCount = 1; // 保留 /psych_site/
+          var path = window.location.hash.slice(2);
+          var basePath = window.location.pathname.split('/').filter(function(p) { return p.length > 0; }).slice(0, segmentCount).join('/');
+          var newPath = (basePath ? '/' + basePath : '') + '/' + path + window.location.search + window.location.hash;
+          window.history.replaceState(null, document.title, newPath);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
