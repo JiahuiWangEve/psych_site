@@ -211,7 +211,7 @@
         renderList(mbtiList);
       } catch (errXlsx) {
         console.error('xlsx 也加载失败:', errXlsx);
-        container.innerHTML = '<div class="col-span-full text-center py-20 text-red-500">⚠️ MBTI 数据加载失败，请检查 data/mbti.json 或 data/data.xlsx 是否存在</div>';
+        container.innerHTML = '<div class="col-span-full text-center py-20 text-red-500">⚠️ MBTI 数据加载失败，请尝试在浏览器打开</div>';
       }
     }
 
