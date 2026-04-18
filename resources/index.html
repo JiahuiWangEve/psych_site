@@ -24,16 +24,25 @@
       background-color: #f8f8f4;
     }
     .card {
-      @apply bg-white rounded-2xl p-5 border border-gray-200 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer;
+      @apply bg-white/80 backdrop-blur-md rounded-2xl p-5 border border-white/60 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer;
     }
     .nav-link {
-      @apply px-4 py-2 rounded-full transition-colors;
+      @apply px-4 py-2 rounded-full transition-all duration-300;
     }
     .nav-link:hover {
-      @apply bg-primary/10;
+      @apply bg-white/20 backdrop-blur-sm -translate-y-0.5;
     }
     .nav-link.active {
-      @apply bg-white text-primary font-medium;
+      @apply bg-white text-primary font-medium shadow-sm;
+    }
+    .mobile-nav-link {
+      @apply block px-4 py-3 rounded-xl transition-colors;
+    }
+    .mobile-nav-link:hover {
+      @apply bg-secondary;
+    }
+    .mobile-nav-link.active {
+      @apply bg-secondary text-primary font-medium;
     }
   </style>
 </head>
@@ -47,13 +56,52 @@
             <img src="../website_images/logo.png" alt="蓬草心理社" class="w-8 h-8 object-contain rounded">
             <span class="font-semibold text-lg">蓬草心理社</span>
           </a>
+          <!-- Desktop Menu -->
           <nav class="hidden lg:flex items-center gap-2">
             <a href="../" class="nav-link">首页</a>
             <a href="../mbti/" class="nav-link">MBTI衍生测试</a>
             <a href="../resources/" class="nav-link active">心理学资源分享</a>
             <a href="../about/" class="nav-link">关于社团</a>
           </nav>
+          <!-- Mobile Menu Button -->
+          <button 
+            class="lg:hidden p-2 rounded-full hover:bg-white/20 transition-colors"
+            onclick="toggleMobileMenu()"
+          >
+            <i class="fa-solid fa-bars w-5 h-5"></i>
+          </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div 
+      id="mobile-overlay"
+      class="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden hidden z-40"
+      onclick="toggleMobileMenu()"
+    ></div>
+
+    <!-- Mobile Sidebar -->
+    <div 
+      id="mobile-sidebar"
+      class="fixed top-0 right-0 h-full w-[75vw] max-w-[320px] bg-white/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 translate-x-full lg:hidden z-50"
+    >
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-8">
+          <span class="font-semibold text-lg text-gray-800">菜单</span>
+          <button
+            class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            onclick="toggleMobileMenu()"
+          >
+            <i class="fa-solid fa-xmark w-5 h-5"></i>
+          </button>
+        </div>
+        <nav className="flex flex-col gap-2">
+          <a href="../" class="mobile-nav-link" onclick="toggleMobileMenu()">首页</a>
+          <a href="../mbti/" class="mobile-nav-link" onclick="toggleMobileMenu()">MBTI衍生测试</a>
+          <a href="../resources/" class="mobile-nav-link active" onclick="toggleMobileMenu()">心理学资源分享</a>
+          <a href="../about/" class="mobile-nav-link" onclick="toggleMobileMenu()">关于社团</a>
+        </nav>
       </div>
     </div>
   </header>
@@ -132,6 +180,9 @@
     </div>
   </footer>
 
+  <!-- SheetJS for reading xlsx -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -145,7 +196,7 @@
     function getTagColor(index) {
       const colors = [
         'bg-blue-100 text-blue-700',
-        'bg-green-100 text-green-700',
+        'bg-green--100 text-green-700',
         'bg-purple-100 text-purple-700',
         'bg-yellow-100 text-yellow-700',
         'bg-pink-100 text-pink-700',
@@ -169,20 +220,28 @@
       window.open(fullUrl, '_blank');
     }
 
-    // 加载数据
+    // 加载数据 from xlsx
     async function loadData() {
       try {
-        const [resData, resClass] = await Promise.all([
-          fetch('../data/资源数据集.json'),
-          fetch('../data/分类库.json')
-        ]);
-        allData = await resData.json();
-        classData = await resClass.json();
+        const response = await fetch('../data/data.xlsx');
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer);
+
+        // 第一个sheet：资源数据
+        const resourceSheet = workbook.Sheets[workbook.SheetNames[0]];
+        allData = XLSX.utils.sheet_to_json(resourceSheet);
+
+        // 第二个sheet：分类数据
+        if (workbook.SheetNames.length > 1) {
+          const classSheet = workbook.Sheets[workbook.SheetNames[1]];
+          classData = XLSX.utils.sheet_to_json(classSheet);
+        }
+
         initFilters();
         renderList();
       } catch (err) {
         console.error('加载数据失败:', err);
-        document.getElementById('resource-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500">加载数据失败，请检查网络连接</div>';
+        document.getElementById('resource-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500">加载数据失败: ' + err.message + '</div>';
       }
     }
 
@@ -218,6 +277,7 @@
 
     // 获取资源的所有分类（包含上级分类）
     function getAllCategories(itemTags) {
+      if (!itemTags) return [];
       const tags = itemTags.split(',').map(t => t.trim()).filter(t => t);
       let categories = [...tags];
       classData.forEach(row => {
@@ -332,6 +392,14 @@
 
     // 加载数据
     loadData();
+
+    // 移动端菜单
+    function toggleMobileMenu() {
+      const overlay = document.getElementById('mobile-overlay');
+      const sidebar = document.getElementById('mobile-sidebar');
+      overlay.classList.toggle('hidden');
+      sidebar.classList.toggle('translate-x-full');
+    }
   </script>
 </body>
 </html>

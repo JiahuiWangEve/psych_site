@@ -24,16 +24,25 @@
       background-color: #f8f8f4;
     }
     .card {
-      @apply bg-white rounded-2xl p-5 border border-gray-200 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer;
+      @apply bg-white/80 backdrop-blur-md rounded-2xl p-5 border border-white/60 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer;
     }
     .nav-link {
-      @apply px-4 py-2 rounded-full transition-colors;
+      @apply px-4 py-2 rounded-full transition-all duration-300;
     }
     .nav-link:hover {
-      @apply bg-primary/10;
+      @apply bg-white/20 backdrop-blur-sm -translate-y-0.5;
     }
     .nav-link.active {
-      @apply bg-white text-primary font-medium;
+      @apply bg-white text-primary font-medium shadow-sm;
+    }
+    .mobile-nav-link {
+      @apply block px-4 py-3 rounded-xl transition-colors;
+    }
+    .mobile-nav-link:hover {
+      @apply bg-secondary;
+    }
+    .mobile-nav-link.active {
+      @apply bg-secondary text-primary font-medium;
     }
   </style>
 </head>
@@ -47,13 +56,52 @@
             <img src="./website_images/logo.png" alt="蓬草心理社" class="w-8 h-8 object-contain rounded">
             <span class="font-semibold text-lg">蓬草心理社</span>
           </a>
+          <!-- Desktop Menu -->
           <nav class="hidden lg:flex items-center gap-2">
             <a href="./" class="nav-link active">首页</a>
             <a href="./mbti/" class="nav-link">MBTI衍生测试</a>
             <a href="./resources/" class="nav-link">心理学资源分享</a>
             <a href="./about/" class="nav-link">关于社团</a>
           </nav>
+          <!-- Mobile Menu Button -->
+          <button 
+            class="lg:hidden p-2 rounded-full hover:bg-white/20 transition-colors"
+            onclick="toggleMobileMenu()"
+          >
+            <i class="fa-solid fa-bars w-5 h-5"></i>
+          </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div 
+      id="mobile-overlay"
+      class="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden hidden z-40"
+      onclick="toggleMobileMenu()"
+    ></div>
+
+    <!-- Mobile Sidebar -->
+    <div 
+      id="mobile-sidebar"
+      class="fixed top-0 right-0 h-full w-[75vw] max-w-[320px] bg-white/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 translate-x-full lg:hidden z-50"
+    >
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-8">
+          <span class="font-semibold text-lg text-gray-800">菜单</span>
+          <button
+            class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            onclick="toggleMobileMenu()"
+          >
+            <i class="fa-solid fa-xmark w-5 h-5"></i>
+          </button>
+        </div>
+        <nav className="flex flex-col gap-2">
+          <a href="./" class="mobile-nav-link active" onclick="toggleMobileMenu()">首页</a>
+          <a href="./mbti/" class="mobile-nav-link" onclick="toggleMobileMenu()">MBTI衍生测试</a>
+          <a href="./resources/" class="mobile-nav-link" onclick="toggleMobileMenu()">心理学资源分享</a>
+          <a href="./about/" class="mobile-nav-link" onclick="toggleMobileMenu()">关于社团</a>
+        </nav>
       </div>
     </div>
   </header>
@@ -65,9 +113,28 @@
           <h1 class="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
             欢迎来到<span class="text-primary">蓬草心理社</span>
           </h1>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-            以草为名，向阳而生。在这里，一起探索内心世界，认识自己，接纳自己。
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            我们关注大学生的心理健康与精神世界，渴望搭建一个有温度、有回应、有趣的交流平台。<br>
+            把「内在探索」当成一种爱好，一起研究认知、情绪、思维本身，在交流中打破孤立，让思考不再是一个人的内耗。
           </p>
+        </div>
+
+        <!-- 近期活动 -->
+        <div class="bg-secondary/50 rounded-2xl p-6 mb-10 border border-primary/10">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">
+            <i class="fa-solid fa-calendar-lines text-primary mr-2"></i>
+            近期活动
+          </h3>
+          <ul class="space-y-3 text-gray-700">
+            <li class="flex items-start gap-3">
+              <i class="fa-solid fa-circle-check text-primary mt-1"></i>
+              <span><strong>当MBTI遇上狼人杀</strong> — 时间：5月10日，地点：待定</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fa-solid fa-seedling text-primary mt-1"></i>
+              <span>社团锐意发展中，欢迎给出你的idea，一起创造我们喜欢的活动 ✨</span>
+            </li>
+          </ul>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
@@ -101,6 +168,14 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 移动端菜单
+    function toggleMobileMenu() {
+      const overlay = document.getElementById('mobile-overlay');
+      const sidebar = document.getElementById('mobile-sidebar');
+      overlay.classList.toggle('hidden');
+      sidebar.classList.toggle('translate-x-full');
+    }
   </script>
 </body>
 </html>
