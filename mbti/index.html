@@ -178,21 +178,40 @@
     </div>
   </footer>
 
+  <!-- SheetJS for reading xlsx -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
     let mbtiList = [];
 
-    // 加载 MBTI 数据 from json
+    // 加载 MBTI 数据：先尝试 json，失败再尝试 xlsx
     async function loadData() {
+      const container = document.getElementById('test-list');
       try {
+        // 1. 尝试读取 json
         const response = await fetch('../data/mbti.json');
         mbtiList = await response.json();
         initFilter();
         renderList(mbtiList);
-      } catch (err) {
-        console.error('加载数据失败:', err);
-        document.getElementById('test-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500">加载 MBTI 数据失败</div>';
+        return;
+      } catch (errJson) {
+        console.warn('json 加载失败，尝试 xlsx:', errJson);
+      }
+
+      try {
+        // 2. 尝试读取 xlsx，第一个 sheet 就是 mbti 数据
+        const response = await fetch('../data/data.xlsx');
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer);
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        mbtiList = XLSX.utils.sheet_to_json(firstSheet);
+        initFilter();
+        renderList(mbtiList);
+      } catch (errXlsx) {
+        console.error('xlsx 也加载失败:', errXlsx);
+        container.innerHTML = '<div class="col-span-full text-center py-20 text-red-500">⚠️ MBTI 数据加载失败，请检查 data/mbti.json 或 data/data.xlsx 是否存在</div>';
       }
     }
 
