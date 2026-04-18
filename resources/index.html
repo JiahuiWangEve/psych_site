@@ -220,12 +220,12 @@
     // 获取标签颜色
     function getTagColor(index) {
       const colors = [
-        'bg-blue-100 text-blue-700',
-        'bg-green-100 text-green-700',
-        'bg-purple-100 text-purple-700',
-        'bg-yellow-100 text-yellow-700',
-        'bg-pink-100 text-pink-700',
-        'bg-indigo-100 text-indigo-700',
+        { bg: 'rgba(59, 130, 246, 0.1)', text: 'rgb(30, 64, 175)' },
+        { bg: 'rgba(34, 197, 94, 0.1)', text: 'rgb(21, 128, 61)' },
+        { bg: 'rgba(168, 85, 247, 0.1)', text: 'rgb(126, 34, 206)' },
+        { bg: 'rgba(234, 179, 8, 0.1)', text: 'rgb(161, 98, 7)' },
+        { bg: 'rgba(244, 114, 182, 0.1)', text: 'rgb(190, 24, 93)' },
+        { bg: 'rgba(99, 102, 241, 0.1)', text: 'rgb(79, 70, 229)' },
       ];
       return colors[index % colors.length];
     }
@@ -371,17 +371,16 @@
           </h3>
           ${tags.length > 0 ? `
             <div class="flex flex-wrap gap-2 mb-3">
-              ${tags.map((tag, tagIndex) => `
-                <span class="px-3 py-1 rounded-full text-sm font-medium ${getTagColor(tagIndex)}">
-                  ${tag}
-                </span>
-              `).join('')}
+              ${tags.map((tag, tagIndex) => {
+                const color = getTagColor(tagIndex);
+                return `<span class="px-3 py-1 rounded-full text-sm font-medium" style="background-color: ${color.bg}; color: ${color.text};">${tag}</span>`;
+              }).join('')}
             </div>
           ` : ''}
           ${sources.length > 0 ? `
             <div class="flex flex-wrap gap-2 mb-4">
               ${sources.map((source, sourceIndex) => `
-                <span class="px-3 py-1 rounded-full text-sm font-medium bg-sky-100 text-sky-700">
+                <span class="px-3 py-1 rounded-full text-sm font-medium" style="background-color: rgba(56, 189, 248, 0.1); color: rgb(14, 165, 233);">
                   ${source}
                 </span>
               `).join('')}
