@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心理学资源分享库 - 蓬草心理社</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#49703B',
+            secondary: '#d6e9dc',
+            muted: '#e8f0eb',
+          },
+        },
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8f8f4;
+    }
+    .card {
+      @apply bg-white rounded-2xl p-5 border border-gray-200 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer;
+    }
+    .nav-link {
+      @apply px-4 py-2 rounded-full transition-colors;
+    }
+    .nav-link:hover {
+      @apply bg-primary/10;
+    }
+    .nav-link.active {
+      @apply bg-white text-primary font-medium;
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header class="sticky top-0 z-50 w-full">
+    <div class="bg-primary/90 backdrop-blur-xl text-white shadow-sm">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <a href="../" class="flex items-center gap-3">
+            <img src="../website_images/logo.png" alt="蓬草心理社" class="w-8 h-8 object-contain rounded">
+            <span class="font-semibold text-lg">蓬草心理社</span>
+          </a>
+          <nav class="hidden lg:flex items-center gap-2">
+            <a href="../" class="nav-link">首页</a>
+            <a href="../mbti/" class="nav-link">MBTI衍生测试</a>
+            <a href="../resources/" class="nav-link active">心理学资源分享</a>
+            <a href="../about/" class="nav-link">关于社团</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+        🧠 心理学资源分享库
+      </h1>
+      <p class="text-gray-600 mb-6">
+        收集整理了优质的心理学相关视频、文章和工具，点击卡片即可观看/访问
+      </p>
+    </div>
+
+    <!-- 筛选工具区 -->
+    <div class="bg-white rounded-2xl p-5 mb-7 shadow-sm border border-gray-200 flex flex-wrap gap-3 items-center">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="🔍 搜索标题或标签..."
+        oninput="applyFilters()"
+        class="flex-1 min-w-[200px] px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+
+      <select
+        id="cat-select"
+        onchange="applyFilters()"
+        class="px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+      >
+        <option value="">📁 全部分类</option>
+      </select>
+
+      <select
+        id="source-select"
+        onchange="applyFilters()"
+        class="px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+      >
+        <option value="">📄 全部来源</option>
+      </select>
+
+      <button
+        onclick="resetFilters()"
+        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors font-medium"
+      >
+        🔄 重置
+      </button>
+    </div>
+
+    <!-- 资源卡片列表 -->
+    <div id="resource-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- 动态生成 -->
+    </div>
+
+    <!-- 空状态 -->
+    <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl text-gray-500">
+      ✨ 没有找到相关资源，试试调整筛选条件～
+    </div>
+
+    <!-- 投稿按钮放在底部 -->
+    <div class="flex flex-wrap justify-center gap-4 mt-12">
+      <a
+        href="https://docs.qq.com/smartsheet/form/fgBoxDHhmGZF%2Ft00i2h%2FvBF3ya?tab=t00i2h"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-colors font-medium shadow-sm hover:shadow"
+      >
+        <span>➕</span>
+        投稿分享你的心理学资源
+      </a>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-gray-200 mt-12 py-6">
+    <div class="container mx-auto px-4 text-center text-gray-500">
+      <p>© <span id="year"></span> 蓬草心理社. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    let allData = [];
+    let classData = [];
+    let searchKeyword = '';
+    let selectedCat = '';
+    let selectedSource = '';
+
+    // 获取标签颜色
+    function getTagColor(index) {
+      const colors = [
+        'bg-blue-100 text-blue-700',
+        'bg-green-100 text-green-700',
+        'bg-purple-100 text-purple-700',
+        'bg-yellow-100 text-yellow-700',
+        'bg-pink-100 text-pink-700',
+        'bg-indigo-100 text-indigo-700',
+      ];
+      return colors[index % colors.length];
+    }
+
+    // 打开链接
+    function openLink(url) {
+      let fullUrl = url;
+      if (!fullUrl.startsWith('http')) {
+        if (fullUrl.startsWith('//')) {
+          fullUrl = 'https:' + fullUrl;
+        } else if (fullUrl.startsWith('www.')) {
+          fullUrl = 'https://' + fullUrl;
+        } else if (fullUrl.includes('bilibili.com')) {
+          fullUrl = 'https://' + fullUrl;
+        }
+      }
+      window.open(fullUrl, '_blank');
+    }
+
+    // 加载数据
+    async function loadData() {
+      try {
+        const [resData, resClass] = await Promise.all([
+          fetch('../data/资源数据集.json'),
+          fetch('../data/分类库.json')
+        ]);
+        allData = await resData.json();
+        classData = await resClass.json();
+        initFilters();
+        renderList();
+      } catch (err) {
+        console.error('加载数据失败:', err);
+        document.getElementById('resource-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500">加载数据失败，请检查网络连接</div>';
+      }
+    }
+
+    // 初始化筛选器
+    function initFilters() {
+      // 分类
+      const catSet = new Set();
+      classData.forEach(item => {
+        if (item.一级分类) catSet.add(item.一级分类);
+        if (item.子类别) catSet.add(item.子类别);
+      });
+      const catSelect = document.getElementById('cat-select');
+      Array.from(catSet).sort((a, b) => a.localeCompare(b, 'zh')).forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        catSelect.appendChild(option);
+      });
+
+      // 来源
+      const sourceSet = new Set();
+      allData.forEach(item => {
+        if (item.来源) sourceSet.add(item.来源);
+      });
+      const sourceSelect = document.getElementById('source-select');
+      Array.from(sourceSet).sort((a, b) => a.localeCompare(b, 'zh')).forEach(source => {
+        const option = document.createElement('option');
+        option.value = source;
+        option.textContent = source;
+        sourceSelect.appendChild(option);
+      });
+    }
+
+    // 获取资源的所有分类（包含上级分类）
+    function getAllCategories(itemTags) {
+      const tags = itemTags.split(',').map(t => t.trim()).filter(t => t);
+      let categories = [...tags];
+      classData.forEach(row => {
+        if (row.子类别 && tags.includes(row.子类别)) {
+          Object.entries(row).forEach(([key, value]) => {
+            if (key !== '关联' && value && typeof value === 'string' && value.trim()) {
+              if (!categories.includes(value.trim())) {
+                categories.push(value.trim());
+              }
+            }
+          });
+        }
+      });
+      return categories;
+    }
+
+    // 筛选数据
+    function getFilteredData() {
+      return allData.filter(item => {
+        // 关键词搜索
+        const keyword = searchKeyword.toLowerCase().trim();
+        const title = item.标题?.toLowerCase() || '';
+        const tags = item.标签?.toLowerCase() || '';
+        const matchSearch = !keyword || title.includes(keyword) || tags.includes(keyword);
+
+        // 分类筛选
+        let matchCat = true;
+        if (selectedCat) {
+          const categories = getAllCategories(item.标签);
+          if (!categories.includes(selectedCat)) {
+            matchCat = false;
+          }
+        }
+
+        // 来源筛选
+        const matchSource = !selectedSource || item.来源 === selectedSource;
+
+        return matchSearch && matchCat && matchSource;
+      });
+    }
+
+    // 渲染列表
+    function renderList() {
+      const container = document.getElementById('resource-list');
+      const emptyState = document.getElementById('empty-state');
+      container.innerHTML = '';
+      const filteredData = getFilteredData();
+
+      if (filteredData.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      } else {
+        emptyState.classList.add('hidden');
+      }
+
+      filteredData.forEach((item, index) => {
+        const tags = item.标签?.split(',').map(t => t.trim()).filter(t => t) || [];
+        const sources = item.来源?.split(',').map(s => s.trim()).filter(s => s) || [];
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => openLink(item.链接);
+        card.innerHTML = `
+          <h3 class="text-lg font-semibold text-gray-800 mb-3 leading-relaxed">
+            ${item.标题}
+          </h3>
+          ${tags.length > 0 ? `
+            <div class="flex flex-wrap gap-2 mb-3">
+              ${tags.map((tag, tagIndex) => `
+                <span class="px-3 py-1 rounded-full text-sm font-medium ${getTagColor(tagIndex)}">
+                  ${tag}
+                </span>
+              `).join('')}
+            </div>
+          ` : ''}
+          ${sources.length > 0 ? `
+            <div class="flex flex-wrap gap-2 mb-4">
+              ${sources.map((source, sourceIndex) => `
+                <span class="px-3 py-1 rounded-full text-sm font-medium bg-sky-100 text-sky-700">
+                  ${source}
+                </span>
+              `).join('')}
+            </div>
+          ` : ''}
+          <div class="flex items-center text-sm text-blue-600 font-medium pt-3 border-t border-gray-100">
+            <span class="mr-2">▶</span>
+            点击访问
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 应用筛选
+    function applyFilters() {
+      searchKeyword = document.getElementById('search-input').value;
+      selectedCat = document.getElementById('cat-select').value;
+      selectedSource = document.getElementById('source-select').value;
+      renderList();
+    }
+
+    // 重置筛选
+    function resetFilters() {
+      document.getElementById('search-input').value = '';
+      document.getElementById('cat-select').value = '';
+      document.getElementById('source-select').value = '';
+      searchKeyword = '';
+      selectedCat = '';
+      selectedSource = '';
+      renderList();
+    }
+
+    // 加载数据
+    loadData();
+  </script>
+</body>
+</html>

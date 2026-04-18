@@ -1,31 +1,106 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>蓬草心理社</title>
-    <!-- GitHub Pages SPA 404 重定向解析脚本 -->
-    <script>
-      (function() {
-        // 如果 hash 中包含路径，把它转换为正常的 history 路径
-        if (window.location.hash && window.location.hash.startsWith('#/')) {
-          var segmentCount = 1; // 保留 /psych_site/ 这一级
-          var hashPath = window.location.hash.substring(1); // 取 # 后面的部分
-          var segments = window.location.pathname.split('/').filter(function(p) { return p.length > 0; });
-          var basePath = segments.slice(0, segmentCount).join('/');
-          var newPath = '';
-          if (basePath) {
-            newPath += '/' + basePath;
-          }
-          newPath += hashPath;
-          window.history.replaceState(null, document.title, newPath);
-        }
-      })();
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>蓬草心理社</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#49703B',
+            secondary: '#d6e9dc',
+            muted: '#e8f0eb',
+          },
+        },
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8f8f4;
+    }
+    .card {
+      @apply bg-white rounded-2xl p-5 border border-gray-200 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer;
+    }
+    .nav-link {
+      @apply px-4 py-2 rounded-full transition-colors;
+    }
+    .nav-link:hover {
+      @apply bg-primary/10;
+    }
+    .nav-link.active {
+      @apply bg-white text-primary font-medium;
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header class="sticky top-0 z-50 w-full">
+    <div class="bg-primary/90 backdrop-blur-xl text-white shadow-sm">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <a href="./" class="flex items-center gap-3">
+            <img src="./website_images/logo.png" alt="蓬草心理社" class="w-8 h-8 object-contain rounded">
+            <span class="font-semibold text-lg">蓬草心理社</span>
+          </a>
+          <nav class="hidden lg:flex items-center gap-2">
+            <a href="./" class="nav-link active">首页</a>
+            <a href="./mbti/" class="nav-link">MBTI衍生测试</a>
+            <a href="./resources/" class="nav-link">心理学资源分享</a>
+            <a href="./about/" class="nav-link">关于社团</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-white rounded-3xl p-8 lg:p-12 shadow-sm border border-gray-100">
+        <div class="text-center mb-10">
+          <h1 class="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
+            欢迎来到<span class="text-primary">蓬草心理社</span>
+          </h1>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            以草为名，向阳而生。在这里，一起探索内心世界，认识自己，接纳自己。
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+          <a href="./mbti/" class="card text-center">
+            <div class="text-4xl mb-4"><i class="fa-solid fa-brain"></i></div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">MBTI 测试集合</h3>
+            <p class="text-gray-600">各种 MBTI 衍生人格测试合集，快来试试</p>
+          </a>
+
+          <a href="./resources/" class="card text-center">
+            <div class="text-4xl mb-4"><i class="fa-solid fa-book-open"></i></div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">心理学资源</h3>
+            <p class="text-gray-600">优质心理学视频、文章、工具分享</p>
+          </a>
+
+          <a href="./about/" class="card text-center">
+            <div class="text-4xl mb-4"><i class="fa-solid fa-users"></i></div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">关于我们</h3>
+            <p class="text-gray-600">了解蓬草心理社，加入我们一起交流</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-gray-200 mt-12 py-6">
+    <div class="container mx-auto px-4 text-center text-gray-500">
+      <p>© <span id="year"></span> 蓬草心理社. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
 </html>

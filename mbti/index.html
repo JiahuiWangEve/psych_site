@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBTI 衍生测试集合 - 蓬草心理社</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#49703B',
+            secondary: '#d6e9dc',
+            muted: '#e8f0eb',
+          },
+        },
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8f8f4;
+    }
+    .card {
+      @apply bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all hover:-translate-y-1;
+    }
+    .nav-link {
+      @apply px-4 py-2 rounded-full transition-colors;
+    }
+    .nav-link:hover {
+      @apply bg-primary/10;
+    }
+    .nav-link.active {
+      @apply bg-white text-primary font-medium;
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header class="sticky top-0 z-50 w-full">
+    <div class="bg-primary/90 backdrop-blur-xl text-white shadow-sm">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <a href="../" class="flex items-center gap-3">
+            <img src="../website_images/logo.png" alt="蓬草心理社" class="w-8 h-8 object-contain rounded">
+            <span class="font-semibold text-lg">蓬草心理社</span>
+          </a>
+          <nav class="hidden lg:flex items-center gap-2">
+            <a href="../" class="nav-link">首页</a>
+            <a href="../mbti/" class="nav-link active">MBTI衍生测试</a>
+            <a href="../resources/" class="nav-link">心理学资源分享</a>
+            <a href="../about/" class="nav-link">关于社团</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+        MBTI 衍生测试集合
+      </h1>
+      <p class="text-gray-600 mb-6">
+        收集了各种流行的 MBTI 及其衍生人格测试，点击卡片即可跳转
+      </p>
+
+      <!-- 筛选器 -->
+      <div class="inline-flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm border border-gray-200">
+        <label for="type-filter" class="text-gray-700 font-medium">
+          按类型筛选：
+        </label>
+        <select id="type-filter" onchange="filterList()" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="all">全部 (<span id="total-count">0</span>)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="test-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 测试列表通过 JS 动态生成 -->
+    </div>
+
+    <div id="empty-state" class="hidden text-center py-20 text-gray-500">
+      没有找到该类型的测试 😕
+    </div>
+
+    <!-- 投稿按钮放在底部 -->
+    <div class="flex flex-wrap justify-center gap-4 mt-12">
+      <a
+        href="https://docs.qq.com/form/page/DZnNDVkN4UExEYnNF"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-colors font-medium shadow-sm hover:shadow"
+      >
+        <span>➕</span>
+        投稿新的 MBTI 变体测试
+      </a>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-gray-200 mt-12 py-6">
+    <div class="container mx-auto px-4 text-center text-gray-500">
+      <p>© <span id="year"></span> 蓬草心理社. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // MBTI 测试数据
+    const mbtiList = [
+      {
+        id: 1,
+        name: "官网 16Personalities",
+        description: "最经典的原版 MBTI 测试",
+        type: "总体人格",
+        url: "https://16personalities.org.cn/"
+      },
+      {
+        id: 2,
+        name: "SBTI 星空社",
+        description: "更详细的功能二分法测试",
+        type: "总体人格",
+        url: "https://sbti.dev/test"
+      },
+      {
+        id: 3,
+        name: "CPTI 认知功能测试",
+        description: "专门测八方位认知功能",
+        type: "细分领域",
+        url: "#小程序://CPTI测试/jksA3Rz4MPLm4Uh"
+      },
+      {
+        id: 4,
+        name: "C-BTI 认知行为测试",
+        description: "基于认知行为类型的测试",
+        type: "细分领域",
+        url: "https://cbti.codefather.cn/"
+      },
+      {
+        id: 5,
+        name: "荣格八维测试",
+        description: "经典的荣格八维测试",
+        type: "细分领域",
+        url: "https://www.apesk.com/jungtest/"
+      },
+      {
+        id: 6,
+        name: "浪漫偏好测试",
+        description:“测你在亲密关系中的浪漫偏好”，
+        type: "细分领域",
+        url: "https://sakinorva.net/test/romantic_preferences"
+      },
+      {
+        id: 7,
+        name: "你是什么蛋糕",
+        description: "娱乐向测试，看看你对应哪种蛋糕",
+        type: "娱乐玩梗",
+        url: "https://www.cake.me/personality-test/what-cake-r-u-pro?locale=zh-CN"
+      },
+      {
+        id: 8,
+        name: "SDTI 自我识别测试",
+        description: "帮助你自我识别人格类型的测试",
+        type: "总体人格",
+        url: "https://sdtis.com/"
+      },
+      {
+        id: 9,
+        name: "TestUrText",
+        description: "文字类型测试，通过文字判断你的类型",
+        type: "细分领域",
+        url: "https://testurtext.us/index.html"
+      },
+      {
+        id: 10,
+        name: "GovernaTor 的八维测试",
+        description: "开源的八维功能测试",
+        type: "细分领域",
+        url: "https://gouvernathor.github.io/zh_CN/"
+      },
+      {
+        id: 11,
+        name: "ACGTI 另类认知测试",
+        description: "另一种角度的认知功能测试",
+        type: "细分领域",
+        url: "https://acgti.tianxingleo.top/#/"
+      },
+      {
+        id: 12,
+        name: "鸟类分类测试",
+        description: "把人分成四种鸟类的娱乐测试",
+        type: "娱乐玩梗",
+        url: "https://xiaohao934.github.io/birdtest/"
+      },
+      {
+        id: 13,
+        name: "ABTI 天赋本能测试",
+        description: "基于天赋本能的类型测试",
+        type: "总体人格",
+        url: "https://abti.fun/"
+      },
+      {
+        id: 14,
+        name: "疾病污名化认知问卷",
+        description: "心理测量问卷",
+        type: "细分领域",
+        url: "https://healthbigdata.wjx.cn/m/69635824.aspx"
+      },
+      {
+        id: 15,
+        name: "IAT 内隐联想测验",
+        description: "经典的内隐态度测量",
+        type: "细分领域",
+        url: "https://implicit.harvard.edu/implicit/china"
+      },
+      {
+        id: 16,
+        name: " GD七维度测试",
+        description: "七个维度的人格测试",
+        type: "总体人格",
+        url: "https://minke8.cn/gd7.html"
+      }
+    ];
+
+    // 获取所有不重复的类型
+    function getTypes() {
+      const typeSet = new Set();
+      mbtiList.forEach(test => typeSet.add(test.type));
+      return ['all', ...Array.from(typeSet)];
+    }
+
+    // 初始化筛选下拉框
+    function initFilter() {
+      const select = document.getElementById('type-filter');
+      const types = getTypes();
+      types.forEach(type => {
+        if (type === 'all') {
+          document.getElementById('total-count').textContent = mbtiList.length;
+        } else {
+          const count = mbtiList.filter(t => t.type === type).length;
+          const option = document.createElement('option');
+          option.value = type;
+          option.textContent = type + ' (' + count + ')';
+          select.appendChild(option);
+        }
+      });
+    }
+
+    // 获取类型颜色
+    function getTypeColor(type) {
+      const colorMap = {
+        '总体人格': 'bg-blue-100 text-blue-700',
+        '娱乐玩梗': 'bg-pink-100 text-pink-700',
+        '细分领域': 'bg-green-100 text-green-700',
+      };
+      return colorMap[type] || 'bg-gray-100 text-gray-700';
+    }
+
+    // 渲染列表
+    function renderList(filteredList) {
+      const container = document.getElementById('test-list');
+      const emptyState = document.getElementById('empty-state');
+      container.innerHTML = '';
+
+      if (filteredList.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      } else {
+        emptyState.classList.add('hidden');
+      }
+
+      filteredList.forEach(test => {
+        const card = document.createElement('a');
+        card.href = test.url;
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <h3 class="text-xl font-semibold text-gray-800">${test.name}</h3>
+            <i class="fa-solid fa-external-link-alt w-4 h-4 text-gray-400 flex-shrink-0"></i>
+          </div>
+          <p class="text-gray-600 mb-4">${test.description}</p>
+          <div class="flex items-center">
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(test.type)}">
+              ${test.type}
+            </span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 筛选
+    function filterList() {
+      const select = document.getElementById('type-filter');
+      const selectedType = select.value;
+      let filteredList = mbtiList;
+      if (selectedType !== 'all') {
+        filteredList = mbtiList.filter(test => test.type === selectedType);
+      }
+      renderList(filteredList);
+    }
+
+    // 初始化
+    initFilter();
+    renderList(mbtiList);
+  </script>
+</body>
+</html>

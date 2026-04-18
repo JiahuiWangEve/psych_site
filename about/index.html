@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>关于社团 - 蓬草心理社</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#49703B',
+            secondary: '#d6e9dc',
+            muted: '#e8f0eb',
+          },
+        },
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8f8f4;
+    }
+    .nav-link {
+      @apply px-4 py-2 rounded-full transition-colors;
+    }
+    .nav-link:hover {
+      @apply bg-primary/10;
+    }
+    .nav-link.active {
+      @apply bg-white text-primary font-medium;
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header class="sticky top-0 z-50 w-full">
+    <div class="bg-primary/90 backdrop-blur-xl text-white shadow-sm">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <a href="../" class="flex items-center gap-3">
+            <img src="../website_images/logo.png" alt="蓬草心理社" class="w-8 h-8 object-contain rounded">
+            <span class="font-semibold text-lg">蓬草心理社</span>
+          </a>
+          <nav class="hidden lg:flex items-center gap-2">
+            <a href="../" class="nav-link">首页</a>
+            <a href="../mbti/" class="nav-link">MBTI衍生测试</a>
+            <a href="../resources/" class="nav-link">心理学资源分享</a>
+            <a href="../about/" class="nav-link active">关于社团</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+      <div class="bg-white card-glass p-8 lg:p-12 rounded-3xl shadow-sm border border-gray-100">
+        <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">
+          关于我们
+        </h1>
+
+        <div class="prose prose-gray text-gray-600 leading-relaxed">
+          <p class="mb-4">
+            我们是一群热爱心理学的大学生，因为共同的兴趣走到了一起。
+          </p>
+
+          <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">
+            我们的宗旨
+          </h2>
+
+          <ul class="list-disc pl-5 space-y-2">
+            <li>推广心理学知识，让更多人了解心理学</li>
+            <li>提供一个安全包容的交流环境，让大家可以自由探讨内心世界</li>
+            <li>关注大学生心理健康，帮助更多人认识自己、接纳自己</li>
+            <li>以兴趣为导向，让「内在探索」成为一种生活方式</li>
+          </ul>
+
+          <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">
+            活动形式
+          </h2>
+
+          <ul class="list-disc pl-5 space-y-2">
+            <li>读书会：一起读心理学经典书籍</li>
+            <li>讨论会：探讨热门心理学话题</li>
+            <li>观影会：观看心理学相关电影并分享感受</li>
+            <li>茶话会：轻松交流人格测试、个人成长等话题</li>
+            <li>更多活动方式正在探索中...欢迎提出建议！</li>
+          </ul>
+
+          <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">
+            联系方式
+          </h2>
+
+          <p class="mb-6">
+            如果你也对心理学感兴趣，欢迎加入我们的 QQ 群交流：
+            <strong class="text-primary">453440021</strong>
+          </p>
+
+          <div class="mt-6">
+            <p class="mb-4 text-gray-600">扫码直接加入：</p>
+            <img
+              src="../website_images/qrcode.jpg"
+              alt="QQ群二维码"
+              class="max-w-xs rounded-lg shadow-md"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-gray-200 mt-12 py-6">
+    <div class="container mx-auto px-4 text-center text-gray-500">
+      <p>© <span id="year"></span> 蓬草心理社. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
