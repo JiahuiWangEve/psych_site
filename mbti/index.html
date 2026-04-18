@@ -186,32 +186,22 @@
 
     let mbtiList = [];
 
-    // 加载 MBTI 数据：先尝试 json，失败再尝试 xlsx
+    // 加载 MBTI 数据：直接读取 xlsx
     async function loadData() {
       const container = document.getElementById('test-list');
       try {
-        // 1. 尝试读取 json
-        const response = await fetch('../data/mbti.json');
-        mbtiList = await response.json();
-        initFilter();
-        renderList(mbtiList);
-        return;
-      } catch (errJson) {
-        console.warn('json 加载失败，尝试 xlsx:', errJson);
-      }
-
-      try {
-        // 2. 尝试读取 xlsx，第一个 sheet 就是 mbti 数据
-        const response = await fetch('../data/data.xlsx');
+        const response = await fetch('../data/mbtiList.xlsx');
         const arrayBuffer = await response.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer);
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         mbtiList = XLSX.utils.sheet_to_json(firstSheet);
+        // 按id排序
+        mbtiList.sort((a, b) => a.id - b.id);
         initFilter();
         renderList(mbtiList);
-      } catch (errXlsx) {
-        console.error('xlsx 也加载失败:', errXlsx);
-        container.innerHTML = '<div class="col-span-full text-center py-20 text-red-500">⚠️ MBTI 数据加载失败，请尝试在浏览器打开</div>';
+      } catch (err) {
+        console.error('xlsx 加载失败:', err);
+        container.innerHTML = '<div class="col-span-full text-center py-20 text-red-500">⚠️ 数据加载失败，请尝试在浏览器打开网页：https://jiahuiwangeve.github.io/psych_site/mbti/ </div>';
       }
     }
 
@@ -274,12 +264,12 @@
             <h3 class="text-xl font-semibold text-gray-800">${test.name}</h3>
             <i class="fa-solid fa-external-link-alt w-4 h-4 text-gray-400 flex-shrink-0"></i>
           </div>
-          <p class="text-gray-600 mb-4">${test.description}</p>
-          <div class="flex items-center">
+          <div class="flex items-center mb-3">
             <span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ${color.bg}; color: ${color.text};">
               ${test.type}
             </span>
           </div>
+          <p class="text-gray-600 mb-4">${test.description}</p>
         `;
         container.appendChild(card);
       });
