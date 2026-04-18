@@ -5,17 +5,26 @@
   <title>Redirecting...</title>
   <script>
     // 单页应用 GitHub Pages 404 重定向脚本
-    // 适配子路径部署：/psych_site/ → pathSegmentsToKeep = 1
+    // 适配子路径部署：/psych_site/ → 保留 1 段路径
     (function() {
-      var segmentCount = 1; // 保留 1 段路径（/psych_site/）
-      var l = window.location;
-      var pathSegments = l.pathname.split('/').filter(function(p) { return p.length > 0; });
-      var newPath = '';
-      for (var i = 0; i < segmentCount && i < pathSegments.length; i++) {
-        newPath += '/' + pathSegments[i];
+      // 对于 /psych_site/mbti，我们需要重定向到 /psych_site/#/mbti
+      var segmentsToKeep = 1;
+      var location = window.location;
+      var path = location.pathname;
+      var segments = path.split('/').filter(s => s.length > 0);
+      
+      var base = '';
+      for (var i = 0; i < segmentsToKeep && i < segments.length; i++) {
+        base += '/' + segments[i];
       }
-      newPath += '/#/' + l.pathname.slice((newPath.length + 1)) + l.search + l.hash;
-      l.replace(l.origin + newPath);
+      
+      var remainingPath = '';
+      for (var j = segmentsToKeep; j < segments.length; j++) {
+        remainingPath += (remainingPath ? '/' : '') + segments[j];
+      }
+      
+      var newUrl = location.origin + base + '/#' + (remainingPath ? '/' + remainingPath : '') + location.search + location.hash;
+      location.replace(newUrl);
     })();
   </script>
 </head>
