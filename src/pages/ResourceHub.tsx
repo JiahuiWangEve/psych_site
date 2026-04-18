@@ -169,18 +169,6 @@ const ResourceHub: React.FC = () => {
         <p className="text-gray-600 mb-6">
           收集整理了优质的心理学相关视频、文章和工具，点击卡片即可观看/访问
         </p>
-
-        <div className="flex flex-wrap justify-center gap-4 mb-7">
-          <a
-            href="https://docs.qq.com/smartsheet/form/fgBoxDHhmGZF%2Ft00i2h%2FvBF3ya?tab=t00i2h"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors font-medium shadow-sm hover:shadow"
-          >
-            <span>➕</span>
-            投稿分享你的心理学资源
-          </a>
-        </div>
       </div>
 
       {/* 筛选工具区 */}
@@ -280,6 +268,19 @@ const ResourceHub: React.FC = () => {
           ✨ 没有找到相关资源，试试调整筛选条件～
         </div>
       )}
+
+      {/* 投稿按钮放在列表末尾，样式和跳转按钮保持一致，颜色稍灰 */}
+      <div className="flex flex-wrap justify-center gap-4 mt-12">
+        <a
+          href="https://docs.qq.com/smartsheet/form/fgBoxDHhmGZF%2Ft00i2h%2FvBF3ya?tab=t00i2h"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-colors font-medium shadow-sm hover:shadow"
+        >
+          <span>➕</span>
+          投稿分享你的心理学资源
+        </a>
+      </div>
     </div>
   );
 };

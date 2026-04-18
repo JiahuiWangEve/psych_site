@@ -40,18 +40,6 @@ const MbtiHub: React.FC = () => {
           收集了各种流行的 MBTI 及其衍生人格测试，点击卡片即可跳转
         </p>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <a
-            href="https://docs.qq.com/form/page/DZnNDVkN4UExEYnNF"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors font-medium shadow-sm hover:shadow"
-          >
-            <span>➕</span>
-            投稿新的 MBTI 变体测试
-          </a>
-        </div>
-
         {/* 筛选器 */}
         <div className="inline-flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm border border-gray-200">
           <label htmlFor="type-filter" className="text-gray-700 font-medium">
@@ -106,6 +94,19 @@ const MbtiHub: React.FC = () => {
           没有找到该类型的测试 😕
         </div>
       )}
+
+      {/* 投稿按钮放在列表末尾，样式和跳转按钮保持一致，颜色稍灰 */}
+      <div className="flex flex-wrap justify-center gap-4 mt-12">
+        <a
+          href="https://docs.qq.com/form/page/DZnNDVkN4UExEYnNF"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-colors font-medium shadow-sm hover:shadow"
+        >
+          <span>➕</span>
+          投稿新的 MBTI 变体测试
+        </a>
+      </div>
     </div>
   );
 };
