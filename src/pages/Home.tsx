@@ -53,18 +53,18 @@ const Home: React.FC = () => {
               <div className="p-4 bg-muted rounded-xl">
                 <div className="flex items-center gap-3 mb-2">
                   <Calendar className="w-5 h-5 text-primary" />
-                  <h3 className="font-semibold">每周心理学读书会</h3>
+                  <h3 className="font-semibold">活动1活动1活动1</h3>
                 </div>
-                <p className="text-gray-600 text-sm">每周五晚 7:00-9:00</p>
-                <p className="text-gray-500 text-sm mt-1">学生活动中心 302 室</p>
+                <p className="text-gray-600 text-sm">x月 x日 7:00-9:00</p>
+                <p className="text-gray-500 text-sm mt-1">xx活动中心 xxx 室</p>
               </div>
               <div className="p-4 bg-muted rounded-xl">
                 <div className="flex items-center gap-3 mb-2">
                   <Calendar className="w-5 h-5 text-primary" />
-                  <h3 className="font-semibold">MBTI 人格茶话会</h3>
+                  <h3 className="font-semibold">To be continued...</h3>
                 </div>
-                <p className="text-gray-600 text-sm">每月第一个周六下午</p>
-                <p className="text-gray-500 text-sm mt-1">咖啡馆线下交流</p>
+                <p className="text-gray-600 text-sm">社团锐意发展中</p>
+                <p className="text-gray-500 text-sm mt-1">欢迎分享你的活动想法！</p>
               </div>
             </div>
           </div>
@@ -77,11 +77,13 @@ const Home: React.FC = () => {
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
               <div>
               <p className="text-gray-600 mb-2">QQ 交流群</p>
-              <p className="text-xl font-semibold text-primary">123456789</p>
+              <p className="text-xl font-semibold text-primary">453440021</p>
             </div>
-            <div className="w-40 h-40 bg-gray-200 rounded-xl flex items-center justify-center text-gray-400">
-              二维码位置
-            </div>
+            <img 
+                src="/website_images/qrcode.png" 
+                alt="QQ群二维码" 
+                className="max-w-xs rounded-lg shadow-md"
+              />
           </div>
         </div>
       </section>
