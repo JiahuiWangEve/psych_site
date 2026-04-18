@@ -49,7 +49,7 @@ const About: React.FC = () => {
             <div className="mt-6">
               <p className="mb-4 text-gray-600">扫码直接加入：</p>
               <img 
-                src="./website_images/qrcode_1776231135790.jpg" 
+                src="/website_images/qrcode.jpg" 
                 alt="QQ群二维码" 
                 className="max-w-xs rounded-lg shadow-md"
               />

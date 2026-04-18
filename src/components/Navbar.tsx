@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Heart } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,9 +19,13 @@ const Navbar: React.FC = () => {
       <div className="bg-primary/90 backdrop-blur-xl text-white shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <Heart className="w-6 h-6" />
-              <span className="font-semibold text-lg">心理社团</span>
+            <Link to="/" className="flex items-center gap-3">
+              <img 
+                src="/website_images/logo.png" 
+                alt="蓬草心理社" 
+                className="w-8 h-8 object-contain rounded"
+              />
+              <span className="font-semibold text-lg">蓬草心理社</span>
             </Link>
 
             {/* Desktop Menu */}
