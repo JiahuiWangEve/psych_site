@@ -147,7 +147,7 @@
         <label for="type-filter" class="text-gray-700 font-medium">
           按类型筛选：
         </label>
-        <select id="type-filter" onchange="filterList()" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <select id="type-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
           <option value="all">全部 (<span id="total-count">0</span>)</option>
         </select>
       </div>
@@ -286,6 +286,97 @@
       
       console.log('🧪 全部 ' + mbtiList.length + ' 个卡片渲染完成！');
       // ============= 渲染结束
+      
+      // ============= 🧪 完全重写筛选逻辑，不用原来的任何代码
+      
+      // 1. 手动去重获取所有类型
+      var typeMap = {};
+      var typeList = ['all'];
+      for (var i = 0; i < mbtiList.length; i++) {
+        var t = mbtiList[i].type;
+        if (!typeMap[t]) {
+          typeMap[t] = 0;
+          typeList.push(t);
+        }
+        typeMap[t]++;
+      }
+      typeMap['all'] = mbtiList.length;
+      
+      // 2. 生成下拉框选项
+      var select = document.getElementById('type-filter');
+      select.innerHTML = '';
+      for (var i = 0; i < typeList.length; i++) {
+        var t = typeList[i];
+        var option = document.createElement('option');
+        option.value = t;
+        if (t === 'all') {
+          option.textContent = '全部 (' + typeMap[t] + ')';
+        } else {
+          option.textContent = t + ' (' + typeMap[t] + ')';
+        }
+        select.appendChild(option);
+      }
+      
+      // 3. 绑定筛选事件
+      select.onchange = function() {
+        var selectedType = this.value;
+        var filtered = [];
+        
+        if (selectedType === 'all') {
+          filtered = mbtiList;
+        } else {
+          for (var i = 0; i < mbtiList.length; i++) {
+            if (mbtiList[i].type === selectedType) {
+              filtered.push(mbtiList[i]);
+            }
+          }
+        }
+        
+        // 重新渲染筛选后的卡片
+        var container = document.getElementById('test-list');
+        container.innerHTML = '';
+        
+        var colorMap = {
+          '总体人格': { bg: 'rgba(59, 130, 246, 0.1)', text: 'rgb(30, 64, 175)' },
+          '娱乐玩梗': { bg: 'rgba(244, 114, 182, 0.1)', text: 'rgb(190, 24, 93)' },
+          '细分领域': { bg: 'rgba(34, 197, 94, 0.1)', text: 'rgb(21, 128, 61)' },
+        };
+        
+        for (var i = 0; i < filtered.length; i++) {
+          var test = filtered[i];
+          var card = document.createElement('div');
+          card.className = 'card';
+          card.setAttribute('data-url', test.url);
+          
+          card.onclick = function(url) {
+            return function() {
+              window.open(url, '_blank');
+            };
+          }(test.url);
+          
+          var color = colorMap[test.type] || { bg: 'rgba(107, 114, 128, 0.1)', text: 'rgb(75, 85, 99)' };
+          
+          var html = '';
+          html += '<div class="flex justify-between items-start mb-3">';
+          html +=   '<h3 class="text-xl font-semibold text-gray-800">' + test.name + '</h3>';
+          html +=   '<span style="font-size: 16px;">↗</span>';
+          html += '</div>';
+          html += '<div class="flex items-center mb-3">';
+          html +=   '<span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ' + color.bg + '; color: ' + color.text + ';">';
+          html +=     test.type;
+          html +=   '</span>';
+          html += '</div>';
+          html += '<p class="text-gray-600 mb-4">' + test.description + '</p>';
+          
+          card.innerHTML = html;
+          container.appendChild(card);
+        }
+        
+        console.log('🧪 筛选完成，显示 ' + filtered.length + ' 个卡片');
+      };
+      
+      console.log('🧪 筛选功能初始化完成！');
+      // ============= 筛选逻辑结束
       
       // ============= 调试信息（这里先执行，不依赖 renderList）
       var debugContent = document.getElementById('debug-content');
