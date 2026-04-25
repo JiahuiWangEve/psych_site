@@ -245,6 +245,25 @@
       var container = document.getElementById('test-list');
       console.log('内嵌 JSON 数据加载成功，共 ' + mbtiList.length + ' 条');
       
+      // ============= 🧪 最简单的测试按钮
+      var testBtn = document.createElement('button');
+      testBtn.textContent = mbtiList[0].name;
+      testBtn.style.padding = '20px';
+      testBtn.style.background = 'green';
+      testBtn.style.color = 'white';
+      testBtn.style.fontSize = '20px';
+      testBtn.style.border = 'none';
+      testBtn.style.borderRadius = '10px';
+      testBtn.style.margin = '20px auto';
+      testBtn.style.display = 'block';
+      testBtn.style.cursor = 'pointer';
+      testBtn.onclick = function() {
+        window.open(mbtiList[0].url, '_blank');
+      };
+      container.appendChild(testBtn);
+      console.log('🧪 测试按钮已经加到容器里了！');
+      // ============= 测试结束
+      
       // ============= 调试信息（这里先执行，不依赖 renderList）
       var debugContent = document.getElementById('debug-content');
       console.log('debugContent 元素:', debugContent);
