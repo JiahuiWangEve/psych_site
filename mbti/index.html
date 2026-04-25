@@ -172,6 +172,9 @@
     </div>
   </main>
 
+  <!-- 日志容器 -->
+  <div id="log-container" class="container mx-auto px-4 py-4 bg-gray-100 rounded-lg text-sm font-mono mt-8"></div>
+
   <footer class="bg-white border-t border-gray-200 mt-12 py-6">
     <div class="container mx-auto px-4 text-center text-gray-500">
       <p>© <span id="year"></span> 蓬草心理社. All rights reserved.</p>
@@ -183,6 +186,23 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 覆盖 console.log 和 console.error 以在网页上显示
+    const originalLog = console.log;
+    const originalError = console.error;
+    const logContainer = document.getElementById('log-container');
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const message = args.join(' ');
+      logContainer.innerHTML += '<div class="text-blue-600">LOG: ' + message + '</div>';
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      const message = args.join(' ');
+      logContainer.innerHTML += '<div class="text-red-600">ERROR: ' + message + '</div>';
+    };
 
     let mbtiList = [];
 
@@ -196,12 +216,14 @@
         const workbook = XLSX.read(arrayBuffer);
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         mbtiList = XLSX.utils.sheet_to_json(firstSheet);
+        console.log('xlsx 加载成功');
       } catch (xlsxErr) {
         console.error('xlsx 加载失败:', xlsxErr);
         try {
           // 尝试加载 json
           const response = await fetch('../data/mbtiList.json');
           mbtiList = await response.json();
+          console.log('json 加载成功');
         } catch (jsonErr) {
           console.error('json 加载失败:', jsonErr);
           container.innerHTML = '<div class="col-span-full text-center py-20 text-red-500">⚠️ 数据加载失败，请尝试在浏览器打开网页：https://jiahuiwangeve.github.io/psych_site/mbti/ </div>';
