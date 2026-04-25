@@ -240,6 +240,31 @@
       const container = document.getElementById('test-list');
       console.log('内嵌 JSON 数据加载成功，共 ' + mbtiList.length + ' 条');
       
+      // ============= 调试信息（这里先执行，不依赖 renderList）
+      const debugContent = document.getElementById('debug-content');
+      console.log('debugContent 元素:', debugContent);
+      console.log('mbtiList[0]:', JSON.stringify(mbtiList[0]));
+      
+      if (debugContent && mbtiList.length > 0) {
+        const first = mbtiList[0];
+        debugContent.innerHTML = '';
+        
+        // 一条一条加，避免某一条出错导致整个都不显示
+        debugContent.innerHTML += '<div>✅ 内嵌数据加载成功！共 ' + mbtiList.length + ' 条</div>';
+        debugContent.innerHTML += '<div>📌 第一条原始数据: ' + JSON.stringify(first) + '</div>';
+        debugContent.innerHTML += '<div>📌 id: ' + first['id'] + '</div>';
+        debugContent.innerHTML += '<div>📌 name: ' + first['name'] + '</div>';
+        debugContent.innerHTML += '<div>📌 type: ' + first['type'] + '</div>';
+        debugContent.innerHTML += '<div>📌 description: ' + first['description'] + '</div>';
+        debugContent.innerHTML += '<div>📌 url: ' + first['url'] + '</div>';
+        debugContent.innerHTML += '<div class="mt-2 opacity-70">最后更新: ' + new Date().toLocaleString('zh-CN') + '</div>';
+      } else {
+        if (debugContent) {
+          debugContent.innerHTML = '<div class="text-red-600">❌ 调试失败: debugContent=' + debugContent + ', 数据长度=' + mbtiList.length + '</div>';
+        }
+      }
+      // ============= 调试结束
+      
       // 按id排序（id是字符串，转成数字比较）
       mbtiList.sort((a, b) => parseInt(a.id) - parseInt(b.id));
       initFilter();
@@ -315,19 +340,6 @@
         container.appendChild(card);
       });
 
-      // 显示第一个元素的调试信息
-      const debugContent = document.getElementById('debug-content');
-      if (filteredList.length > 0 && debugContent) {
-        const first = filteredList[0];
-        debugContent.innerHTML = `
-          <div>✅ 数据解析成功！共 ${filteredList.length} 条</div>
-          <div>📌 第一条: id=${first.id}</div>
-          <div>📌 名称: ${first.name}</div>
-          <div>📌 类型: ${first.type}</div>
-          <div>📌 URL: ${first.url}</div>
-          <div class="mt-2 opacity-70">最后更新: ${new Date().toLocaleString('zh-CN')}</div>
-        `;
-      }
     }
 
     // 筛选
