@@ -201,24 +201,24 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // 覆盖 console.log 和 console.error 以在网页上显示
-    const originalLog = console.log;
-    const originalError = console.error;
-    const logContainer = document.getElementById('log-container');
+    var originalLog = console.log;
+    var originalError = console.error;
+    var logContainer = document.getElementById('log-container');
 
     console.log = function(...args) {
       originalLog.apply(console, args);
-      const message = args.join(' ');
+      var message = args.join(' ');
       logContainer.innerHTML += '<div class="text-blue-600">LOG: ' + message + '</div>';
     };
 
     console.error = function(...args) {
       originalError.apply(console, args);
-      const message = args.join(' ');
+      var message = args.join(' ');
       logContainer.innerHTML += '<div class="text-red-600">ERROR: ' + message + '</div>';
     };
 
     // 直接内嵌 JSON 数据，100% 兼容，不依赖外部文件解析
-    let mbtiList = [
+    var mbtiList = [
       {"id": "1", "name": "MBTI 官方测试", "type": "总体人格", "description": "最经典的MBTI人格测试，免费版本提供详细的人格分析", "url": "https://16personalities.org.cn/"},
       {"id": "2", "name": "SBTI 人格测试", "type": "总体人格", "description": "最近很火的玩梗型人格测试", "url": "https://sbti.dev/test"},
       {"id": "3", "name": "CPTI 友谊测试", "type": "娱乐玩梗", "description": "和朋友一起测量，可以测出你们之间的关系类型", "url": "#小程序://CPTI测试/jksA3Rz4MPLm4Uh"},
@@ -242,16 +242,16 @@
 
     // 加载数据：直接用内嵌数据，不需要异步等待
     function loadData() {
-      const container = document.getElementById('test-list');
+      var container = document.getElementById('test-list');
       console.log('内嵌 JSON 数据加载成功，共 ' + mbtiList.length + ' 条');
       
       // ============= 调试信息（这里先执行，不依赖 renderList）
-      const debugContent = document.getElementById('debug-content');
+      var debugContent = document.getElementById('debug-content');
       console.log('debugContent 元素:', debugContent);
       console.log('mbtiList[0]:', JSON.stringify(mbtiList[0]));
       
       if (debugContent && mbtiList.length > 0) {
-        const first = mbtiList[0];
+        var first = mbtiList[0];
         debugContent.innerHTML = '';
         
         // 一条一条加，避免某一条出错导致整个都不显示
@@ -270,39 +270,55 @@
       }
       // ============= 调试结束
       
-      // 按id排序（id是字符串，转成数字比较）
-      mbtiList.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+      // 按id排序（ES5 普通函数，不用箭头函数）
+      mbtiList.sort(function(a, b) {
+        return parseInt(a.id) - parseInt(b.id);
+      });
       initFilter();
       renderList(mbtiList);
     }
 
-    // 获取所有不重复的类型
+    // 获取所有不重复的类型（纯 ES5，不用 Set）
     function getTypes() {
-      const typeSet = new Set();
-      mbtiList.forEach(test => typeSet.add(test.type));
-      return ['all', ...Array.from(typeSet)];
+      var types = ['all'];
+      var seen = {};  // 用对象去重
+      
+      for (var i = 0; i < mbtiList.length; i++) {
+        var type = mbtiList[i].type;
+        if (!seen[type]) {
+          seen[type] = true;
+          types.push(type);
+        }
+      }
+      return types;
     }
 
-    // 初始化筛选下拉框
+    // 初始化筛选下拉框（纯 ES5，不用 forEach）
     function initFilter() {
-      const select = document.getElementById('type-filter');
-      const types = getTypes();
-      types.forEach(type => {
+      var select = document.getElementById('type-filter');
+      var types = getTypes();
+      
+      for (var i = 0; i < types.length; i++) {
+        var type = types[i];
         if (type === 'all') {
           document.getElementById('total-count').textContent = mbtiList.length;
         } else {
-          const count = mbtiList.filter(t => t.type === type).length;
-          const option = document.createElement('option');
+          // 手动统计数量，不用 filter
+          var count = 0;
+          for (var j = 0; j < mbtiList.length; j++) {
+            if (mbtiList[j].type === type) count++;
+          }
+          var option = document.createElement('option');
           option.value = type;
           option.textContent = type + ' (' + count + ')';
           select.appendChild(option);
         }
-      });
+      }
     }
 
     // 获取类型颜色样式
     function getTypeColor(type) {
-      const colorMap = {
+      var colorMap = {
         '总体人格': { bg: 'rgba(59, 130, 246, 0.1)', text: 'rgb(30, 64, 175)' },
         '娱乐玩梗': { bg: 'rgba(244, 114, 182, 0.1)', text: 'rgb(190, 24, 93)' },
         '细分领域': { bg: 'rgba(34, 197, 94, 0.1)', text: 'rgb(21, 128, 61)' },
@@ -312,8 +328,8 @@
 
     // 渲染列表
     function renderList(filteredList) {
-      const container = document.getElementById('test-list');
-      const emptyState = document.getElementById('empty-state');
+      var container = document.getElementById('test-list');
+      var emptyState = document.getElementById('empty-state');
       container.innerHTML = '';
 
       if (filteredList.length === 0) {
@@ -364,13 +380,20 @@
 
     }
 
-    // 筛选
+    // 筛选（纯 ES5，不用 filter）
     function filterList() {
-      const select = document.getElementById('type-filter');
-      const selectedType = select.value;
-      let filteredList = mbtiList;
-      if (selectedType !== 'all') {
-        filteredList = mbtiList.filter(test => test.type === selectedType);
+      var select = document.getElementById('type-filter');
+      var selectedType = select.value;
+      var filteredList = [];
+      
+      if (selectedType === 'all') {
+        filteredList = mbtiList;
+      } else {
+        for (var i = 0; i < mbtiList.length; i++) {
+          if (mbtiList[i].type === selectedType) {
+            filteredList.push(mbtiList[i]);
+          }
+        }
       }
       renderList(filteredList);
     }
@@ -380,8 +403,8 @@
 
     // 移动端菜单
     function toggleMobileMenu() {
-      const overlay = document.getElementById('mobile-overlay');
-      const sidebar = document.getElementById('mobile-sidebar');
+      var overlay = document.getElementById('mobile-overlay');
+      var sidebar = document.getElementById('mobile-sidebar');
       overlay.classList.toggle('hidden');
       sidebar.classList.toggle('translate-x-full');
     }
