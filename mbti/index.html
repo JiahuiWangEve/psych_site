@@ -153,12 +153,9 @@
       </div>
     </div>
 
-    <!-- 测试容器：加红色边框方便肉眼确认容器是否存在 -->
-    <div id="test-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="border: 3px solid red; padding: 10px; background: pink;">
+    <!-- 测试卡片容器 -->
+    <div id="test-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- 测试列表通过 JS 动态生成 -->
-      <div class="card" style="background: yellow; padding: 20px;">
-        🟡 这是静态写死的测试卡片，如果这个能看见，说明容器和 CSS 都没问题
-      </div>
     </div>
 
     <div id="empty-state" class="hidden text-center py-20 text-gray-500">
@@ -245,23 +242,47 @@
       var container = document.getElementById('test-list');
       console.log('内嵌 JSON 数据加载成功，共 ' + mbtiList.length + ' 条');
       
-      // ============= 🧪 最简单的测试按钮
-      var testBtn = document.createElement('button');
-      testBtn.textContent = mbtiList[0].name;
-      testBtn.style.padding = '20px';
-      testBtn.style.background = 'green';
-      testBtn.style.color = 'white';
-      testBtn.style.fontSize = '20px';
-      testBtn.style.border = 'none';
-      testBtn.style.borderRadius = '10px';
-      testBtn.style.margin = '20px auto';
-      testBtn.style.display = 'block';
-      testBtn.style.cursor = 'pointer';
-      testBtn.onclick = function() {
-        window.open(mbtiList[0].url, '_blank');
-      };
-      container.appendChild(testBtn);
-      console.log('🧪 测试按钮已经加到容器里了！');
+      // ============= 🧪 手动渲染两个卡片（不用循环，不用任何复杂逻辑）
+      
+      // 渲染第1个卡片
+      var card1 = document.createElement('div');
+      card1.className = 'card';
+      card1.setAttribute('data-url', mbtiList[0].url);
+      card1.onclick = function() { window.open(this.getAttribute('data-url'), '_blank'); };
+      var html1 = '';
+      html1 += '<div class="flex justify-between items-start mb-3">';
+      html1 +=   '<h3 class="text-xl font-semibold text-gray-800">' + mbtiList[0].name + '</h3>';
+      html1 +=   '<span style="font-size: 16px;">↗</span>';
+      html1 += '</div>';
+      html1 += '<div class="flex items-center mb-3">';
+      html1 +=   '<span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: rgba(59, 130, 246, 0.1); color: rgb(30, 64, 175);">';
+      html1 +=     mbtiList[0].type;
+      html1 +=   '</span>';
+      html1 += '</div>';
+      html1 += '<p class="text-gray-600 mb-4">' + mbtiList[0].description + '</p>';
+      card1.innerHTML = html1;
+      container.appendChild(card1);
+      
+      // 渲染第2个卡片
+      var card2 = document.createElement('div');
+      card2.className = 'card';
+      card2.setAttribute('data-url', mbtiList[1].url);
+      card2.onclick = function() { window.open(this.getAttribute('data-url'), '_blank'); };
+      var html2 = '';
+      html2 += '<div class="flex justify-between items-start mb-3">';
+      html2 +=   '<h3 class="text-xl font-semibold text-gray-800">' + mbtiList[1].name + '</h3>';
+      html2 +=   '<span style="font-size: 16px;">↗</span>';
+      html2 += '</div>';
+      html2 += '<div class="flex items-center mb-3">';
+      html2 +=   '<span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: rgba(59, 130, 246, 0.1); color: rgb(30, 64, 175);">';
+      html2 +=     mbtiList[1].type;
+      html2 +=   '</span>';
+      html2 += '</div>';
+      html2 += '<p class="text-gray-600 mb-4">' + mbtiList[1].description + '</p>';
+      card2.innerHTML = html2;
+      container.appendChild(card2);
+      
+      console.log('🧪 两个卡片都手动渲染完成！');
       // ============= 测试结束
       
       // ============= 调试信息（这里先执行，不依赖 renderList）
