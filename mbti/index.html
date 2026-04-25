@@ -186,23 +186,32 @@
 
     let mbtiList = [];
 
-    // 加载 MBTI 数据：直接读取 xlsx
+    // 加载 MBTI 数据：优先读取 xlsx，失败则读取 json
     async function loadData() {
       const container = document.getElementById('test-list');
       try {
+        // 尝试加载 xlsx
         const response = await fetch('../data/mbtiList.xlsx');
         const arrayBuffer = await response.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer);
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         mbtiList = XLSX.utils.sheet_to_json(firstSheet);
-        // 按id排序
-        mbtiList.sort((a, b) => a.id - b.id);
-        initFilter();
-        renderList(mbtiList);
-      } catch (err) {
-        console.error('xlsx 加载失败:', err);
-        container.innerHTML = '<div class="col-span-full text-center py-20 text-red-500">⚠️ 数据加载失败，请尝试在浏览器打开网页：https://jiahuiwangeve.github.io/psych_site/mbti/ </div>';
+      } catch (xlsxErr) {
+        console.error('xlsx 加载失败:', xlsxErr);
+        try {
+          // 尝试加载 json
+          const response = await fetch('../data/mbtiList.json');
+          mbtiList = await response.json();
+        } catch (jsonErr) {
+          console.error('json 加载失败:', jsonErr);
+          container.innerHTML = '<div class="col-span-full text-center py-20 text-red-500">⚠️ 数据加载失败，请尝试在浏览器打开网页：https://jiahuiwangeve.github.io/psych_site/mbti/ </div>';
+          return;
+        }
       }
+      // 按id排序
+      mbtiList.sort((a, b) => a.id - b.id);
+      initFilter();
+      renderList(mbtiList);
     }
 
     // 获取所有不重复的类型
