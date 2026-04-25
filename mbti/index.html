@@ -33,6 +33,7 @@
       display: block;
       text-decoration: none;
       -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
     }
     .card:hover, .card:active {
       transform: translateY(-8px);
@@ -318,27 +319,36 @@
         emptyState.classList.add('hidden');
       }
 
-      filteredList.forEach(test => {
-        const card = document.createElement('a');
-        card.href = test.url;
-        card.target = '_blank';
-        card.rel = 'noopener noreferrer';
+      // 用普通 for 循环 + 字符串拼接 + div + onclick，100% 兼容
+      for (var i = 0; i < filteredList.length; i++) {
+        var test = filteredList[i];
+        var card = document.createElement('div');
         card.className = 'card';
-        const color = getTypeColor(test.type);
-        card.innerHTML = `
-          <div class="flex justify-between items-start mb-3">
-            <h3 class="text-xl font-semibold text-gray-800">${test.name}</h3>
-            <i class="fa-solid fa-external-link-alt w-4 h-4 text-gray-400 flex-shrink-0"></i>
-          </div>
-          <div class="flex items-center mb-3">
-            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ${color.bg}; color: ${color.text};">
-              ${test.type}
-            </span>
-          </div>
-          <p class="text-gray-600 mb-4">${test.description}</p>
-        `;
+        card.setAttribute('data-url', test.url);
+        
+        // 点击事件：打开新窗口
+        card.onclick = function() {
+          window.open(this.getAttribute('data-url'), '_blank');
+        };
+        
+        var color = getTypeColor(test.type);
+        
+        // 完全不用模板字符串，用 + 拼接
+        var html = '';
+        html += '<div class="flex justify-between items-start mb-3">';
+        html +=   '<h3 class="text-xl font-semibold text-gray-800">' + test.name + '</h3>';
+        html +=   '<i class="fa-solid fa-external-link-alt w-4 h-4 text-gray-400 flex-shrink-0"></i>';
+        html += '</div>';
+        html += '<div class="flex items-center mb-3">';
+        html +=   '<span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ' + color.bg + '; color: ' + color.text + ';">';
+        html +=     test.type;
+        html +=   '</span>';
+        html += '</div>';
+        html += '<p class="text-gray-600 mb-4">' + test.description + '</p>';
+        
+        card.innerHTML = html;
         container.appendChild(card);
-      });
+      }
 
     }
 
