@@ -176,15 +176,6 @@
     </div>
   </main>
 
-  <!-- 日志容器 -->
-  <div id="log-container" class="container mx-auto px-4 py-4 bg-gray-100 rounded-lg text-sm font-mono mt-8"></div>
-
-  <!-- 数据验证：显示第一个元素信息 -->
-  <div id="data-debug" class="container mx-auto px-4 py-4 bg-yellow-50 border border-yellow-200 rounded-lg mt-4">
-    <h4 class="font-semibold text-yellow-800 mb-2">📊 数据加载验证（第一个元素）:</h4>
-    <div id="debug-content" class="text-sm text-yellow-700 font-mono"></div>
-  </div>
-
   <footer class="bg-white border-t border-gray-200 mt-12 py-6">
     <div class="container mx-auto px-4 text-center text-gray-500">
       <p>© <span id="year"></span> 蓬草心理社. All rights reserved.</p>
@@ -225,7 +216,7 @@
     // 加载数据：直接用内嵌数据，不需要异步等待
     function loadData() {
       var container = document.getElementById('test-list');
-      console.log('内嵌 JSON 数据加载成功，共 ' + mbtiList.length + ' 条');
+      // console.log('内嵌 JSON 数据加载成功，共 ' + mbtiList.length + ' 条');
       
       // ============= 🧪 最朴素的 for 循环，渲染所有 19 个卡片
       
@@ -243,7 +234,7 @@
         card.className = 'card';
         card.setAttribute('data-url', test.url);
         
-        // 闭包坑！！！这里之前没写对，我操！！！
+        // 闭包坑！！！这里之前没写对，
         card.onclick = function(url) {
           return function() {
             window.open(url, '_blank');
@@ -269,7 +260,7 @@
         container.appendChild(card);
       }
       
-      console.log('🧪 全部 ' + mbtiList.length + ' 个卡片渲染完成！');
+      // console.log('🧪 全部 ' + mbtiList.length + ' 个卡片渲染完成！');
       // ============= 渲染结束
       
       // ============= 🧪 完全重写筛选逻辑，不用原来的任何代码
@@ -357,16 +348,16 @@
           container.appendChild(card);
         }
         
-        console.log('🧪 筛选完成，显示 ' + filtered.length + ' 个卡片');
+        // console.log('🧪 筛选完成，显示 ' + filtered.length + ' 个卡片');
       };
       
-      console.log('🧪 筛选功能初始化完成！');
+      // console.log('🧪 筛选功能初始化完成！');
       // ============= 筛选逻辑结束
       
       // ============= 调试信息（这里先执行，不依赖 renderList）
       var debugContent = document.getElementById('debug-content');
-      console.log('debugContent 元素:', debugContent);
-      console.log('mbtiList[0]:', JSON.stringify(mbtiList[0]));
+      // console.log('debugContent 元素:', debugContent);
+      // console.log('mbtiList[0]:', JSON.stringify(mbtiList[0]));
       
       if (debugContent && mbtiList.length > 0) {
         var first = mbtiList[0];
@@ -458,8 +449,8 @@
       }
 
       // 调试：看看容器有没有获取到
-      console.log('容器元素:', container);
-      console.log('渲染前子元素数量:', container.children.length);
+      // console.log('容器元素:', container);
+      // console.log('渲染前子元素数量:', container.children.length);
       
       // 用普通 for 循环 + 字符串拼接 + div + onclick，100% 兼容
       for (var i = 0; i < filteredList.length; i++) {
@@ -493,8 +484,8 @@
       }
       
       // 调试：看看渲染后有多少子元素
-      console.log('渲染后子元素数量:', container.children.length);
-      console.log('第一个子元素:', container.children[0]);
+      // console.log('渲染后子元素数量:', container.children.length);
+      // console.log('第一个子元素:', container.children[0]);
 
     }
 
