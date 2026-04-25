@@ -153,8 +153,12 @@
       </div>
     </div>
 
-    <div id="test-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- 测试容器：加红色边框方便肉眼确认容器是否存在 -->
+    <div id="test-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="border: 3px solid red; padding: 10px; background: pink;">
       <!-- 测试列表通过 JS 动态生成 -->
+      <div class="card" style="background: yellow; padding: 20px;">
+        🟡 这是静态写死的测试卡片，如果这个能看见，说明容器和 CSS 都没问题
+      </div>
     </div>
 
     <div id="empty-state" class="hidden text-center py-20 text-gray-500">
@@ -319,6 +323,10 @@
         emptyState.classList.add('hidden');
       }
 
+      // 调试：看看容器有没有获取到
+      console.log('容器元素:', container);
+      console.log('渲染前子元素数量:', container.children.length);
+      
       // 用普通 for 循环 + 字符串拼接 + div + onclick，100% 兼容
       for (var i = 0; i < filteredList.length; i++) {
         var test = filteredList[i];
@@ -333,11 +341,11 @@
         
         var color = getTypeColor(test.type);
         
-        // 完全不用模板字符串，用 + 拼接
+        // 完全不用模板字符串，用 + 拼接，也不用Font Awesome
         var html = '';
         html += '<div class="flex justify-between items-start mb-3">';
         html +=   '<h3 class="text-xl font-semibold text-gray-800">' + test.name + '</h3>';
-        html +=   '<i class="fa-solid fa-external-link-alt w-4 h-4 text-gray-400 flex-shrink-0"></i>';
+        html +=   '<span style="font-size: 16px;">↗</span>';  // 用纯文本箭头替代图标
         html += '</div>';
         html += '<div class="flex items-center mb-3">';
         html +=   '<span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ' + color.bg + '; color: ' + color.text + ';">';
@@ -349,6 +357,10 @@
         card.innerHTML = html;
         container.appendChild(card);
       }
+      
+      // 调试：看看渲染后有多少子元素
+      console.log('渲染后子元素数量:', container.children.length);
+      console.log('第一个子元素:', container.children[0]);
 
     }
 
