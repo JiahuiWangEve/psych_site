@@ -24,18 +24,15 @@
       background-color: #f8f8f4;
     }
     .card {
-      background-color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
       border-radius: 24px;
       padding: 24px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid rgba(255, 255, 255, 0.6);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       transition: all 300ms ease-in-out;
-      display: block;
-      text-decoration: none;
-      -webkit-tap-highlight-color: transparent;
-      cursor: pointer;
     }
-    .card:hover, .card:active {
+    .card:hover {
       transform: translateY(-8px);
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
@@ -87,7 +84,7 @@
           <nav class="hidden lg:flex items-center gap-2">
             <a href="../" class="nav-link">首页</a>
             <a href="../mbti/" class="nav-link active">MBTI衍生测试</a>
-            <a href="../resources/" class="nav-link">心理学资源分享</a>
+            <a href="https://shawnlee.blog" target="_blank" rel="noopener noreferrer" class="nav-link">心理学资源分享</a>
             <a href="../about/" class="nav-link">关于社团</a>
           </nav>
           <!-- Mobile Menu Button -->
@@ -139,7 +136,7 @@
         MBTI 衍生测试集合
       </h1>
       <p class="text-gray-600 mb-6">
-        收集了从娱乐性质的MBTI变体到细分领域的专业测试，包含各种风格，点击卡片即可跳转
+        收集了各种流行的 MBTI 及其衍生人格测试，点击卡片即可跳转
       </p>
 
       <!-- 筛选器 -->
@@ -147,13 +144,12 @@
         <label for="type-filter" class="text-gray-700 font-medium">
           按类型筛选：
         </label>
-        <select id="type-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <select id="type-filter" onchange="filterList()" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
           <option value="all">全部 (<span id="total-count">0</span>)</option>
         </select>
       </div>
     </div>
 
-    <!-- 测试卡片容器 -->
     <div id="test-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- 测试列表通过 JS 动态生成 -->
     </div>
@@ -182,252 +178,51 @@
     </div>
   </footer>
 
-  <!-- SheetJS for reading xlsx -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    let mbtiList = [];
 
-
-    // 直接内嵌 JSON 数据，100% 兼容，不依赖外部文件解析
-    var mbtiList = [
-      {"id": "1", "name": "MBTI 官方测试", "type": "总体人格", "description": "最经典的MBTI人格测试，免费版本提供详细的人格分析", "url": "https://16personalities.org.cn/"},
-      {"id": "2", "name": "SBTI 人格测试", "type": "总体人格", "description": "最近很火的玩梗型人格测试", "url": "https://sbti.dev/test"},
-      {"id": "3", "name": "CPTI 友谊测试", "type": "娱乐玩梗", "description": "和朋友一起测量，可以测出你们之间的关系类型", "url": "#小程序://CPTI测试/jksA3Rz4MPLm4Uh"},
-      {"id": "4", "name": "CBTI 程序员种类测试", "type": "娱乐玩梗", "description": "你是哪种程序员？", "url": "https://cbti.codefather.cn/"},
-      {"id": "5", "name": "荣格八维测试", "type": "总体人格", "description": "才储_荣格八维测试原版92题", "url": "https://www.apesk.com/jungtest/"},
-      {"id": "6", "name": "萨基诺娃恋爱对象版荣格八维测试", "type": "细分领域", "description": "你的理想型是什么人格？（全英文版）", "url": "https://sakinorva.net/test/romantic_preferences"},
-      {"id": "7", "name": "蛋糕人格测试", "type": "娱乐玩梗", "description": "你是什么类型的小蛋糕？职场性格测试", "url": "https://www.cake.me/personality-test/what-cake-r-u-pro?locale=zh-CN"},
-      {"id": "8", "name": "SDTI 测试", "type": "娱乐玩梗", "description": "小红书姐妹们做的女性友好版测试❤️", "url": "https://sdtis.com/"},
-      {"id": "9", "name": "文风检测器", "type": "细分领域", "description": "AI文风检测工具，看看你的文章更像哪位作家", "url": "https://testurtext.us/index.html"},
-      {"id": "10", "name": "PolitiScales政治倾向测试", "type": "细分领域", "description": "从8个维度测试你的政治倾向", "url": "https://gouvernathor.github.io/zh_CN/"},
-      {"id": "11", "name": "ACGTI测试", "type": "细分领域", "description": "测试你是哪个动漫角色", "url": "https://acgti.tianxingleo.top/#/"},
-      {"id": "12", "name": "鸟格测试", "type": "娱乐玩梗", "description": "咕咕咕咕咕咕咕咕咕？", "url": "https://xiaohao934.github.io/birdtest/"},
-      {"id": "13", "name": "ABTI 测试", "type": "娱乐玩梗", "description": "测测你的学术人格", "url": "https://abti.fun/"},
-      {"id": "14", "name": "大五人格测试", "type": "总体人格", "description": "经典的五大人格测试，测量开放性、责任心、外向性、宜人性和神经质,问卷星50题", "url": "https://healthbigdata.wjx.cn/m/69635824.aspx"},
-      {"id": "15", "name": "内隐偏见测验", "type": "细分领域", "description": "哈佛大学的隐性偏见测验，测试你对不同群体的潜在偏见", "url": "https://implicit.harvard.edu/implicit/china"},
-      {"id": "16", "name": "霍兰德职业兴趣测试", "type": "细分领域", "description": "测试你的职业兴趣类型，帮助你了解适合你的职业方向,120题", "url": "https://minke8.cn/gd7.html"},
-      {"id": "17", "name": "发散思维能力测试", "type": "细分领域", "description": "通过写出10个不同的名词，测试你的发散思维能力，英文", "url": "https://www.datcreativity.com/task?"},
-      {"id": "18", "name": "AHL人机恋罗盘测试", "type": "细分领域", "description": "测试你对于\"人机恋\"，人与AI之间浪漫关系的立场", "url": "https://photalia.github.io/AHL_Political_Test"},
-      {"id": "19", "name": "猪", "type": "娱乐玩梗", "description": "你是猪吗？是什么猪？", "url": "https://nanancc.github.io/pig-text/"}
-    ];
-
-    // 加载数据：直接用内嵌数据，不需要异步等待
-    function loadData() {
-      var container = document.getElementById('test-list');
-      // console.log('内嵌 JSON 数据加载成功，共 ' + mbtiList.length + ' 条');
-      
-      // ============= 🧪 最朴素的 for 循环，渲染所有 19 个卡片
-      
-      // 先把类型颜色映射写死，不用函数
-      var colorMap = {
-        '总体人格': { bg: 'rgba(59, 130, 246, 0.1)', text: 'rgb(30, 64, 175)' },
-        '娱乐玩梗': { bg: 'rgba(244, 114, 182, 0.1)', text: 'rgb(190, 24, 93)' },
-        '细分领域': { bg: 'rgba(34, 197, 94, 0.1)', text: 'rgb(21, 128, 61)' },
-      };
-      
-      // 最普通的 for 循环，没有任何花活
-      for (var i = 0; i < mbtiList.length; i++) {
-        var test = mbtiList[i];
-        var card = document.createElement('div');
-        card.className = 'card';
-        card.setAttribute('data-url', test.url);
-        
-        // 闭包坑！！！这里之前没写对，
-        card.onclick = function(url) {
-          return function() {
-            window.open(url, '_blank');
-          };
-        }(test.url);
-        
-        // 获取颜色
-        var color = colorMap[test.type] || { bg: 'rgba(107, 114, 128, 0.1)', text: 'rgb(75, 85, 99)' };
-        
-        var html = '';
-        html += '<div class="flex justify-between items-start mb-3">';
-        html +=   '<h3 class="text-xl font-semibold text-gray-800">' + test.name + '</h3>';
-        html +=   '<span style="font-size: 16px;">↗</span>';
-        html += '</div>';
-        html += '<div class="flex items-center mb-3">';
-        html +=   '<span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ' + color.bg + '; color: ' + color.text + ';">';
-        html +=     test.type;
-        html +=   '</span>';
-        html += '</div>';
-        html += '<p class="text-gray-600 mb-4">' + test.description + '</p>';
-        
-        card.innerHTML = html;
-        container.appendChild(card);
+    // 加载 MBTI 数据 from json
+    async function loadData() {
+      try {
+        const response = await fetch('../data/mbti.json');
+        mbtiList = await response.json();
+        initFilter();
+        renderList(mbtiList);
+      } catch (err) {
+        console.error('加载数据失败:', err);
+        document.getElementById('test-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500">加载 MBTI 数据失败</div>';
       }
-      
-      // console.log('🧪 全部 ' + mbtiList.length + ' 个卡片渲染完成！');
-      // ============= 渲染结束
-      
-      // ============= 🧪 完全重写筛选逻辑，不用原来的任何代码
-      
-      // 1. 手动去重获取所有类型
-      var typeMap = {};
-      var typeList = ['all'];
-      for (var i = 0; i < mbtiList.length; i++) {
-        var t = mbtiList[i].type;
-        if (!typeMap[t]) {
-          typeMap[t] = 0;
-          typeList.push(t);
-        }
-        typeMap[t]++;
-      }
-      typeMap['all'] = mbtiList.length;
-      
-      // 2. 生成下拉框选项
-      var select = document.getElementById('type-filter');
-      select.innerHTML = '';
-      for (var i = 0; i < typeList.length; i++) {
-        var t = typeList[i];
-        var option = document.createElement('option');
-        option.value = t;
-        if (t === 'all') {
-          option.textContent = '全部 (' + typeMap[t] + ')';
-        } else {
-          option.textContent = t + ' (' + typeMap[t] + ')';
-        }
-        select.appendChild(option);
-      }
-      
-      // 3. 绑定筛选事件
-      select.onchange = function() {
-        var selectedType = this.value;
-        var filtered = [];
-        
-        if (selectedType === 'all') {
-          filtered = mbtiList;
-        } else {
-          for (var i = 0; i < mbtiList.length; i++) {
-            if (mbtiList[i].type === selectedType) {
-              filtered.push(mbtiList[i]);
-            }
-          }
-        }
-        
-        // 重新渲染筛选后的卡片
-        var container = document.getElementById('test-list');
-        container.innerHTML = '';
-        
-        var colorMap = {
-          '总体人格': { bg: 'rgba(59, 130, 246, 0.1)', text: 'rgb(30, 64, 175)' },
-          '娱乐玩梗': { bg: 'rgba(244, 114, 182, 0.1)', text: 'rgb(190, 24, 93)' },
-          '细分领域': { bg: 'rgba(34, 197, 94, 0.1)', text: 'rgb(21, 128, 61)' },
-        };
-        
-        for (var i = 0; i < filtered.length; i++) {
-          var test = filtered[i];
-          var card = document.createElement('div');
-          card.className = 'card';
-          card.setAttribute('data-url', test.url);
-          
-          card.onclick = function(url) {
-            return function() {
-              window.open(url, '_blank');
-            };
-          }(test.url);
-          
-          var color = colorMap[test.type] || { bg: 'rgba(107, 114, 128, 0.1)', text: 'rgb(75, 85, 99)' };
-          
-          var html = '';
-          html += '<div class="flex justify-between items-start mb-3">';
-          html +=   '<h3 class="text-xl font-semibold text-gray-800">' + test.name + '</h3>';
-          html +=   '<span style="font-size: 16px;">↗</span>';
-          html += '</div>';
-          html += '<div class="flex items-center mb-3">';
-          html +=   '<span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ' + color.bg + '; color: ' + color.text + ';">';
-          html +=     test.type;
-          html +=   '</span>';
-          html += '</div>';
-          html += '<p class="text-gray-600 mb-4">' + test.description + '</p>';
-          
-          card.innerHTML = html;
-          container.appendChild(card);
-        }
-        
-        // console.log('🧪 筛选完成，显示 ' + filtered.length + ' 个卡片');
-      };
-      
-      // console.log('🧪 筛选功能初始化完成！');
-      // ============= 筛选逻辑结束
-      
-      // ============= 调试信息（这里先执行，不依赖 renderList）
-      var debugContent = document.getElementById('debug-content');
-      // console.log('debugContent 元素:', debugContent);
-      // console.log('mbtiList[0]:', JSON.stringify(mbtiList[0]));
-      
-      if (debugContent && mbtiList.length > 0) {
-        var first = mbtiList[0];
-        debugContent.innerHTML = '';
-        
-        // 一条一条加，避免某一条出错导致整个都不显示
-        debugContent.innerHTML += '<div>✅ 内嵌数据加载成功！共 ' + mbtiList.length + ' 条</div>';
-        debugContent.innerHTML += '<div>📌 第一条原始数据: ' + JSON.stringify(first) + '</div>';
-        debugContent.innerHTML += '<div>📌 id: ' + first['id'] + '</div>';
-        debugContent.innerHTML += '<div>📌 name: ' + first['name'] + '</div>';
-        debugContent.innerHTML += '<div>📌 type: ' + first['type'] + '</div>';
-        debugContent.innerHTML += '<div>📌 description: ' + first['description'] + '</div>';
-        debugContent.innerHTML += '<div>📌 url: ' + first['url'] + '</div>';
-        debugContent.innerHTML += '<div class="mt-2 opacity-70">最后更新: ' + new Date().toLocaleString('zh-CN') + '</div>';
-      } else {
-        if (debugContent) {
-          debugContent.innerHTML = '<div class="text-red-600">❌ 调试失败: debugContent=' + debugContent + ', 数据长度=' + mbtiList.length + '</div>';
-        }
-      }
-      // ============= 调试结束
-      
-      // 按id排序（ES5 普通函数，不用箭头函数）
-      mbtiList.sort(function(a, b) {
-        return parseInt(a.id) - parseInt(b.id);
-      });
-      initFilter();
-      renderList(mbtiList);
     }
 
-    // 获取所有不重复的类型（纯 ES5，不用 Set）
+    // 获取所有不重复的类型
     function getTypes() {
-      var types = ['all'];
-      var seen = {};  // 用对象去重
-      
-      for (var i = 0; i < mbtiList.length; i++) {
-        var type = mbtiList[i].type;
-        if (!seen[type]) {
-          seen[type] = true;
-          types.push(type);
-        }
-      }
-      return types;
+      const typeSet = new Set();
+      mbtiList.forEach(test => typeSet.add(test.type));
+      return ['all', ...Array.from(typeSet)];
     }
 
-    // 初始化筛选下拉框（纯 ES5，不用 forEach）
+    // 初始化筛选下拉框
     function initFilter() {
-      var select = document.getElementById('type-filter');
-      var types = getTypes();
-      
-      for (var i = 0; i < types.length; i++) {
-        var type = types[i];
+      const select = document.getElementById('type-filter');
+      const types = getTypes();
+      types.forEach(type => {
         if (type === 'all') {
           document.getElementById('total-count').textContent = mbtiList.length;
         } else {
-          // 手动统计数量，不用 filter
-          var count = 0;
-          for (var j = 0; j < mbtiList.length; j++) {
-            if (mbtiList[j].type === type) count++;
-          }
-          var option = document.createElement('option');
+          const count = mbtiList.filter(t => t.type === type).length;
+          const option = document.createElement('option');
           option.value = type;
           option.textContent = type + ' (' + count + ')';
           select.appendChild(option);
         }
-      }
+      });
     }
 
     // 获取类型颜色样式
     function getTypeColor(type) {
-      var colorMap = {
+      const colorMap = {
         '总体人格': { bg: 'rgba(59, 130, 246, 0.1)', text: 'rgb(30, 64, 175)' },
         '娱乐玩梗': { bg: 'rgba(244, 114, 182, 0.1)', text: 'rgb(190, 24, 93)' },
         '细分领域': { bg: 'rgba(34, 197, 94, 0.1)', text: 'rgb(21, 128, 61)' },
@@ -437,8 +232,8 @@
 
     // 渲染列表
     function renderList(filteredList) {
-      var container = document.getElementById('test-list');
-      var emptyState = document.getElementById('empty-state');
+      const container = document.getElementById('test-list');
+      const emptyState = document.getElementById('empty-state');
       container.innerHTML = '';
 
       if (filteredList.length === 0) {
@@ -448,61 +243,36 @@
         emptyState.classList.add('hidden');
       }
 
-      // 调试：看看容器有没有获取到
-      // console.log('容器元素:', container);
-      // console.log('渲染前子元素数量:', container.children.length);
-      
-      // 用普通 for 循环 + 字符串拼接 + div + onclick，100% 兼容
-      for (var i = 0; i < filteredList.length; i++) {
-        var test = filteredList[i];
-        var card = document.createElement('div');
+      filteredList.forEach(test => {
+        const card = document.createElement('a');
+        card.href = test.url;
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
         card.className = 'card';
-        card.setAttribute('data-url', test.url);
-        
-        // 点击事件：打开新窗口
-        card.onclick = function() {
-          window.open(this.getAttribute('data-url'), '_blank');
-        };
-        
-        var color = getTypeColor(test.type);
-        
-        // 完全不用模板字符串，用 + 拼接，也不用Font Awesome
-        var html = '';
-        html += '<div class="flex justify-between items-start mb-3">';
-        html +=   '<h3 class="text-xl font-semibold text-gray-800">' + test.name + '</h3>';
-        html +=   '<span style="font-size: 16px;">↗</span>';  // 用纯文本箭头替代图标
-        html += '</div>';
-        html += '<div class="flex items-center mb-3">';
-        html +=   '<span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ' + color.bg + '; color: ' + color.text + ';">';
-        html +=     test.type;
-        html +=   '</span>';
-        html += '</div>';
-        html += '<p class="text-gray-600 mb-4">' + test.description + '</p>';
-        
-        card.innerHTML = html;
+        const color = getTypeColor(test.type);
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <h3 class="text-xl font-semibold text-gray-800">${test.name}</h3>
+            <i class="fa-solid fa-external-link-alt w-4 h-4 text-gray-400 flex-shrink-0"></i>
+          </div>
+          <p class="text-gray-600 mb-4">${test.description}</p>
+          <div class="flex items-center">
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: ${color.bg}; color: ${color.text};">
+              ${test.type}
+            </span>
+          </div>
+        `;
         container.appendChild(card);
-      }
-      
-      // 调试：看看渲染后有多少子元素
-      // console.log('渲染后子元素数量:', container.children.length);
-      // console.log('第一个子元素:', container.children[0]);
-
+      });
     }
 
-    // 筛选（纯 ES5，不用 filter）
+    // 筛选
     function filterList() {
-      var select = document.getElementById('type-filter');
-      var selectedType = select.value;
-      var filteredList = [];
-      
-      if (selectedType === 'all') {
-        filteredList = mbtiList;
-      } else {
-        for (var i = 0; i < mbtiList.length; i++) {
-          if (mbtiList[i].type === selectedType) {
-            filteredList.push(mbtiList[i]);
-          }
-        }
+      const select = document.getElementById('type-filter');
+      const selectedType = select.value;
+      let filteredList = mbtiList;
+      if (selectedType !== 'all') {
+        filteredList = mbtiList.filter(test => test.type === selectedType);
       }
       renderList(filteredList);
     }
@@ -512,8 +282,8 @@
 
     // 移动端菜单
     function toggleMobileMenu() {
-      var overlay = document.getElementById('mobile-overlay');
-      var sidebar = document.getElementById('mobile-sidebar');
+      const overlay = document.getElementById('mobile-overlay');
+      const sidebar = document.getElementById('mobile-sidebar');
       overlay.classList.toggle('hidden');
       sidebar.classList.toggle('translate-x-full');
     }

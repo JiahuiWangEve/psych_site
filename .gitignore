@@ -32,3 +32,4 @@ dist-ssr
 
 # IGA
 .iga
+.meta/
